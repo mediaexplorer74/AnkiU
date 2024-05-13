@@ -11,12 +11,10 @@ This is the source code of Anki Universal app on Windows 10 (Mobile)
 ## Screenshots
 ![](Images/shot01.png)
 ![](Images/shot02.png)
+![](Images/shot03.png)
 
 ## Tech. details
 Min. Win. os. build = 15063
-
-## Status
-Work-in-progress (W10M app not ready yet)
 
 ## Important note
 Sync only working via AnkiWeb. No media syncing.
