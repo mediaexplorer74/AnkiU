@@ -13,7 +13,7 @@
 
     <Popup  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  x:Name="creditPopup" VerticalOffset="0" HorizontalOffset="0">
         <Grid x:Name="creditRoot" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                  Background="{StaticResource DefaultAcrylicBrush}" 
+                  Background="{StaticResource DefaultTextForegroundThemeBrush}" 
                   BorderBrush="Blue" BorderThickness="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />

@@ -196,13 +196,13 @@ namespace AnkiU.UserControls
 
         public void ChangeToDayMode()
         {
-            userControl.Background = UIHelper.CommandBarAcrylicLightBrush;
+            //userControl.Background = UIHelper.CommandBarAcrylicLightBrush;
             userControl.Foreground = UIHelper.DarkerBrush;
         }
 
         public void ChangeToNightMode()
         {
-            userControl.Background = UIHelper.CommandBarAcrylicDarkBrush; ;
+            //userControl.Background = UIHelper.CommandBarAcrylicDarkBrush;
             userControl.Foreground = UIHelper.ForeGroundLight;
         }
 

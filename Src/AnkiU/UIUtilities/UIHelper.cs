@@ -87,6 +87,7 @@ namespace AnkiU.UIUtilities
         public static SolidColorBrush Transparent = new SolidColorBrush(Windows.UI.Colors.Transparent);
         public static SolidColorBrush IndioBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 8, 141, 199));
 
+        /*
         public static AcrylicBrush CommandBarAcrylicLightBrush { get; private set; }
                      = Application.Current.Resources["CommandBarAcrylicLightBrush"] as AcrylicBrush;
         public static AcrylicBrush CommandBarAcrylicDarkBrush { get; private set; }
@@ -96,6 +97,7 @@ namespace AnkiU.UIUtilities
               = Application.Current.Resources["DefaultBackgroundAcrylicLightBrush"] as AcrylicBrush;
         public static AcrylicBrush BackgroundAcrylicDarkBrush { get; private set; }
            = Application.Current.Resources["DefaultBackgroundAcrylicDarkBrush"] as AcrylicBrush;
+        */
 
         public static Windows.UI.Color ContentNightModeColor { get { return ContentNightModeBrush.Color; } }
         private static Windows.UI.Color defaultInkColorDay = Windows.UI.Color.FromArgb(255, 11, 96, 181);

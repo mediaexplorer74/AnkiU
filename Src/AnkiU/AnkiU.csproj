@@ -21,8 +21,7 @@
     <AppxBundle>Always</AppxBundle>
     <AppxBundlePlatforms>x64|arm</AppxBundlePlatforms>
     <Win32Resource>MyResources.res</Win32Resource>
-    <PackageCertificateThumbprint>
-    </PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>CE87DD39DFF4BF3B76B283062F23CA1B7EA0528A</PackageCertificateThumbprint>
     <RuntimeIdentifiers>win10-arm;win10-arm-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppInstallerUpdateFrequency>0</AppInstallerUpdateFrequency>
@@ -44,6 +43,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <CodeAnalysisRuleSet>AnkiU.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -57,6 +57,7 @@
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
     <CodeAnalysisRuleSet>AnkiU.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -2035,7 +2036,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>5.4.2</Version>
+      <Version>6.2.8</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.OneDriveSDK">
       <Version>2.0.7</Version>

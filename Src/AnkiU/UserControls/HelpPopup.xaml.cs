@@ -158,12 +158,12 @@ namespace AnkiU.UserControls
         {
             if (isNightMode)
             {
-                userControl.Background = UIHelper.CommandBarAcrylicDarkBrush;
+                //userControl.Background = UIHelper.CommandBarAcrylicDarkBrush;
                 userControl.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
             }
             else
             {
-                userControl.Background = UIHelper.CommandBarAcrylicLightBrush;
+                //userControl.Background = UIHelper.CommandBarAcrylicLightBrush;
                 userControl.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
             }
         }        

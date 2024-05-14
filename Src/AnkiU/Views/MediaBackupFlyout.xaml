@@ -11,7 +11,8 @@
     d:DesignWidth="400">
 
     <UserControl.Resources>
-        <Flyout x:Name="mediaBackupFlyout" x:Key="MediaBackupFlyoutTemplate" FlyoutPresenterStyle="{StaticResource DefaultFlyoutPresenterStyle}">
+        <Flyout x:Name="mediaBackupFlyout" x:Key="MediaBackupFlyoutTemplate" 
+                FlyoutPresenterStyle="{StaticResource DefaultFlyoutPresenterStyle}">
             <ContentPresenter>
                 <Grid Width="300" >
                     <Grid.RowDefinitions>
@@ -25,11 +26,18 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
+                        
                         <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="Back up to:"/>
-                        <TextBox Margin="5,0,0,0" Grid.Column="1" x:Name="backupRootFolderTextBox" Tag="Black" TextAlignment="Left" VerticalAlignment="Center" HorizontalAlignment="Stretch" IsReadOnly="True"  />
-                        <Button x:Name="folderPickerButton" Style="{StaticResource ButtonRevealStyle}" Background="Transparent"  
-                                Grid.Column="2" Padding="0" Margin="5,0,0,0" Height="35" Width="40" Click="FolderPickerButtonClick" >
-                            <Path Style="{StaticResource OpenFolderIcon}" Margin="0" Width="30" Fill="Transparent" Stroke="Black" RenderTransformOrigin="0.5,0.5">
+                        
+                        <TextBox Margin="5,0,0,0" Grid.Column="1" x:Name="backupRootFolderTextBox" Tag="Black" 
+                                 TextAlignment="Left" VerticalAlignment="Center" HorizontalAlignment="Stretch" 
+                                 IsReadOnly="True"  />
+                        <Button x:Name="folderPickerButton" Style="{StaticResource DefaultButtonRevealStyle}" 
+                                Background="Transparent"  
+                                Grid.Column="2" Padding="0" Margin="5,0,0,0" Height="35" Width="40" 
+                                Click="FolderPickerButtonClick" >
+                            <Path Style="{StaticResource OpenFolderIcon}" Margin="0" Width="30" 
+                                  Fill="Transparent" Stroke="Black" RenderTransformOrigin="0.5,0.5">
                                 <Path.RenderTransform>
                                     <CompositeTransform ScaleX="0.7" ScaleY="0.7"/>
                                 </Path.RenderTransform>
@@ -52,16 +60,23 @@
                                 <DataTemplate x:DataType="data:DeckInformation">
                                     <CheckBox  Background="Transparent" VerticalAlignment="Center" 
                                            Checked="CheckBoxCheckedHandler" Unchecked="CheckBoxUncheckedHandler"
-                                           Foreground="Black" HorizontalContentAlignment="Left"  HorizontalAlignment="Stretch">
-                                        <TextBlock TextAlignment="Left" FontSize="13" TextWrapping="Wrap" Text="{x:Bind BaseName, Mode=OneTime}"/>
+                                           Foreground="Black" HorizontalContentAlignment="Left"  
+                                               HorizontalAlignment="Stretch">
+                                        <TextBlock TextAlignment="Left" FontSize="13" TextWrapping="Wrap" 
+                                                   Text="{x:Bind BaseName, Mode=OneTime}"/>
                                     </CheckBox>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
                    
-                    <Button x:Name="okButton" Margin="0" Width="140" Grid.Row="2" HorizontalAlignment="Left" Content="Back up" Style="{StaticResource ButtonBlue}" Click="OkButtonClickHandler" BorderThickness="0"/>
-                    <Button x:Name="cancelButton" Margin="0" Width="140" Grid.Row="2" HorizontalAlignment="Right" Background="Transparent" Content="Cancel" Style="{StaticResource ButtonGray}" Click="CancelButtonClickHandler" BorderBrush="Black" BorderThickness="1"/>
+                    <Button x:Name="okButton" Margin="0" Width="140" Grid.Row="2" 
+                            HorizontalAlignment="Left" Content="Back up" Style="{StaticResource ButtonBlue}" 
+                            Click="OkButtonClickHandler" BorderThickness="0"/>
+                    <Button x:Name="cancelButton" Margin="0" Width="140" Grid.Row="2" 
+                            HorizontalAlignment="Right" Background="Transparent" 
+                            Content="Cancel" Style="{StaticResource ButtonGray}" 
+                            Click="CancelButtonClickHandler" BorderBrush="Black" BorderThickness="1"/>
                 </Grid>
             </ContentPresenter>
         </Flyout>

@@ -66,7 +66,7 @@ namespace AnkiU.UserControls
             addDeckFlyout.Closed += AddDeckFlyoutClosed;
 
             //A little hack to make sure combobox won't show when touchkey board is showing
-            //If this is not done, white out error will happne on combobox
+            //If this is not done, white out error will happen on combobox
             InputPane.GetForCurrentView().Showing += TouchKeyboardShowingHandler;
             InputPane.GetForCurrentView().Hiding += TouchKeyboardHidingHandler;
         }

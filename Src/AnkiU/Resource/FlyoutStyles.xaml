@@ -1,13 +1,14 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:AnkiU.Resource">
-    
-    <Style TargetType="FlyoutPresenter" x:Key="TagFlyoutPresenterStyle">
+    >
+    <!-- xmlns:local="using:AnkiU.Resource"  -->
+
+        <Style TargetType="FlyoutPresenter" x:Key="TagFlyoutPresenterStyle">
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
         <Setter Property="IsTabStop" Value="False"/>
-        <Setter Property="Background" Value="{StaticResource DefaultAcrylicBrush}"/>
+        <Setter Property="Background" Value="{StaticResource AppBarBackgroundThemeBrush}"/>
         <Setter Property="BorderBrush" Value="Blue"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="0"/>
@@ -33,9 +34,9 @@
     </Style>
 
     <Style TargetType="FlyoutPresenter" x:Key="DefaultFlyoutPresenterStyle">
-        <Setter Property="Background" Value="{StaticResource DefaultAcrylicBrush}"/>
+        <Setter Property="Background" Value="{StaticResource AppBarBackgroundThemeBrush}"/>
         <Setter Property="Opacity" Value="1" />
-        <Setter Property="BorderBrush" Value="Blue" />
+        <Setter Property="BorderBrush" Value="Green" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="MinWidth" Value="50" />
         <Setter Property="MinHeight" Value="50" />
@@ -44,7 +45,7 @@
     </Style>
 
     <Style x:Key="DefaultMenuFlyoutPresenterStyle" TargetType="MenuFlyoutPresenter">
-        <Setter Property="Background" Value="{StaticResource DefaultAcrylicBrush}" />
+        <Setter Property="Background" Value="{StaticResource AppBarBackgroundThemeBrush}" />
         <Setter Property="BorderBrush" Value="Blue" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="{ThemeResource MenuFlyoutPresenterThemePadding}" />
@@ -60,7 +61,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="MenuFlyoutPresenter">
-                    <Grid Background="{TemplateBinding Background}">
+                    <Grid Background="{ThemeResource AppBarBackgroundThemeBrush}">
                         <ScrollViewer x:Name="MenuFlyoutPresenterScrollViewer"
                             Padding="{TemplateBinding Padding}"
                             Margin="{TemplateBinding BorderThickness}"

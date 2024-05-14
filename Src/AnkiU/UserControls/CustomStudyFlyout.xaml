@@ -8,7 +8,7 @@
     mc:Ignorable="d"    
     Foreground="Black"
     d:DesignHeight="400"
-    Background="White"
+    Background="{StaticResource AppBarBackgroundThemeBrush}"
     x:Name="userControl"    
       SizeChanged="WindowSizeChanged"
     d:DesignWidth="400">

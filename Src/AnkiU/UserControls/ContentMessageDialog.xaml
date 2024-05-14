@@ -7,11 +7,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Title="TITLE"
-    Background="{StaticResource DefaultAcrylicBrush}"    
+    Background="{StaticResource AppBarBackgroundThemeBrush}"  
     SecondaryButtonText="OK"
     SecondaryButtonClick="OnOkClick">
 
     <Grid>
-        <TextBlock x:Name="message" TextWrapping="Wrap" Foreground="Black" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" TextAlignment="Left"/>
+        <TextBlock x:Name="message" TextWrapping="Wrap" Foreground="Black" 
+                   VerticalAlignment="Stretch" HorizontalAlignment="Stretch" 
+                   TextAlignment="Left"/>
     </Grid>
 </ContentDialog>

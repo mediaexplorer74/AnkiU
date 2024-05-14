@@ -229,7 +229,12 @@ namespace AnkiU
         public Grid MainGrid { get { return mainGrid; } } 
 
         public SplitView HelpSplitView { get { return helpSplitView; } }
-        public NavigationView RootSplitView { get { return splitView; } }
+        public SplitView RootSplitView {
+            get
+            {
+                return splitView;
+            }
+        }
 
         public WindowSizeState WindowSizeState
         {
@@ -884,8 +889,8 @@ namespace AnkiU
                 }
             }
             catch
-            {//No database yet or something prevent us to access database -> backup at another time
-
+            {
+                //No database yet or something prevent us to access database -> backup at another time
             }
         }
 
@@ -1095,7 +1100,106 @@ namespace AnkiU
 
         private void SplitPaneToggleClickHandler(object sender, RoutedEventArgs e)
         {            
-            splitView.IsPaneOpen = !splitView.IsPaneOpen;
+           splitView.IsPaneOpen = !splitView.IsPaneOpen;
+        }
+
+        private async void SendFeedBackClick(object sender, RoutedEventArgs e)
+        {
+            string message = "For bugs: Please describe the steps needed to reproduce them.\n"
+                            + "For feature requests: Please mention briefly why you need them.\n"
+                            + "We'll reply to your email in one business day.\n";
+            await UIHelper.LaunchEmailApp("ankiuniversal@gmail.com", message);
+        }
+
+        private void InsertMediaFilesClickHandler(object sender, RoutedEventArgs e)
+        {
+            InsertMediaFlyout flyout = new InsertMediaFlyout(Collection);
+            if (this.WindowSizeStates.CurrentState.Name == "wide")
+            {
+                flyout.ShowFlyout((sender as FrameworkElement), FlyoutPlacementMode.Left);
+            }
+            else
+            {
+                splitView.IsPaneOpen = false;
+                flyout.ShowFlyout(commandBar, FlyoutPlacementMode.Bottom);
+            }
+
+        }
+
+        private async void CheckMediaClickHandler(object sender, RoutedEventArgs e)
+        {
+            bool isContinue = await UIHelper.AskUserConfirmation("This may take a long time if you have many media files (>2000). Continue?",
+                                                                  "Check Media");
+            if (!isContinue)
+                return;
+
+            progressDialog = new ProgressDialog();
+            progressDialog.ProgressBarLabel = "This may take a little long...";
+            progressDialog.ShowInDeterminateStateNoStopAsync("Checking media folders");
+            var task = Task.Run(async () =>
+            {
+                var results = await Collection.Media.CheckMissingAndUnusedFiles();
+                await CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    progressDialog.Hide();
+
+                    if (results.MisingFiles.Count == 0 && results.UnusedFiles.Count == 0)
+                    {
+                        await UIHelper.ShowMessageDialog("No unused or missing media founds");
+                        return;
+                    }
+
+                    await ShowResultsToUser(results);
+                });
+            });
+        }
+
+        private void BackupMediaFolders(object sender, RoutedEventArgs e)
+        {
+            MediaBackupFlyout mediaBackupFlyout = new MediaBackupFlyout(Collection);
+
+            if (this.WindowSizeStates.CurrentState.Name == "wide")
+            {
+                mediaBackupFlyout.ShowFlyout((sender as FrameworkElement), FlyoutPlacementMode.Left);
+            }
+            else
+            {
+                splitView.IsPaneOpen = false;
+                mediaBackupFlyout.ShowFlyout(commandBar, FlyoutPlacementMode.Bottom);
+            }
+        }
+
+        private void HelpButtonClick(object sender, RoutedEventArgs e)
+        {
+            InitAllHelpsIfNeeded();
+
+            if (WindowSizeState == WindowSizeState.narrow)
+            {
+                splitView.IsPaneOpen = false;
+                if (helpSplitViewTransform.TranslateX != 0)
+                    helpSplitViewTransform.TranslateX = 0;
+            }
+            else
+            {
+                if (helpSplitViewTransform.TranslateX == 0)
+                    helpSplitViewTransform.TranslateX = splitView.OpenPaneLength;
+            }
+
+            allHelps.Foreground = commandBar.Foreground;
+            helpSplitView.IsHitTestVisible = true;
+            helpSplitView.IsPaneOpen = true;
+        }
+
+
+        private async void DownloadDeckButtonClick(object sender, RoutedEventArgs e)
+        {
+            Uri uri = new Uri("https://ankiweb.net/shared/decks/");
+            await Windows.System.Launcher.LaunchUriAsync(uri);
+        }
+
+        private async void SplitPanelImportButtonClickHandler(object sender, RoutedEventArgs e)
+        {
+            await ImportPackage();
         }
 
         private async Task ImportPackage()
@@ -1103,7 +1207,7 @@ namespace AnkiU
             var fileToImport = await UIHelper.OpenFilePicker("ImportFolderToken", ".apkg");
             if (fileToImport == null)
                 return;
-            
+
             IsCanNavigateBack = false;
             progressDialog = new ProgressDialog();
             progressDialog.ProgressBarLabel = "This may take a little long if package is large...";
@@ -1122,6 +1226,7 @@ namespace AnkiU
             });
         }
 
+       
         private async void ImporterPackageImportStateChangeEventHandler(string message)
         {
             await CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -1130,6 +1235,58 @@ namespace AnkiU
             });
         }
 
+        private void ExportAllButtonClick(object sender, RoutedEventArgs e)
+        {
+            ShowExportFlyout(sender as FrameworkElement);
+        }
+
+        private void ShowExportFlyout(FrameworkElement element)
+        {
+            if (this.WindowSizeStates.CurrentState.Name == "wide")
+            {
+                exportFlyout.Placement = FlyoutPlacementMode.Left;
+                exportFlyout.ShowAt(element);
+            }
+            else
+            {
+                splitView.IsPaneOpen = false;
+                exportFlyout.Placement = FlyoutPlacementMode.Bottom;
+                exportFlyout.ShowAt(commandBar);
+            }
+        }
+
+        private void StatsButtonClick(object sender, RoutedEventArgs e)
+        {
+            RootSplitView.IsPaneOpen = false;
+            Stats.IsWholeCollection = true;
+            contentFrame.Navigate(typeof(StatsPage), this);
+        }
+
+        private void OptimizeButtonClickHandler(object sender, RoutedEventArgs e)
+        {
+            progressDialog = new ProgressDialog();
+            progressDialog.ProgressBarLabel = "Check and rebuild database";
+            progressDialog.ShowInDeterminateStateNoStopAsync("Optimizing collection");
+
+            var task = Task.Run(async () =>
+            {
+                Collection.DeleteGraveLog();
+                Collection.Optimize();
+                await CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    progressDialog.Hide();
+                    await UIHelper.ShowMessageDialog("Data is optimized");
+                });
+            });
+        }
+
+        private void ManageNotetypeClickHandler(object sender, RoutedEventArgs e)
+        {
+            splitView.IsPaneOpen = false;
+            contentFrame.Navigate(typeof(ModelEditor), this);
+        }
+
+        
         private async Task<bool> ImporterDuplicateDeckEventHandler(string name)
         {
             string message = String.Format("The imported package has a deck named \"{0}\".\n" +
@@ -1242,6 +1399,7 @@ namespace AnkiU
         {
             RepositionCommanBar(e.OldState.Name);
         }
+
         private void RepositionCommanBar(string oldStateName)
         {
             int lastPrimary;
@@ -1780,7 +1938,7 @@ namespace AnkiU
 
         private void ShowExportFlyout()
         {
-            splitView.IsPaneOpen = false;
+            //splitView.IsPaneOpen = false;
             exportFlyout.Placement = FlyoutPlacementMode.Bottom;
             exportFlyout.ShowAt(commandBar);
         }
@@ -1928,18 +2086,18 @@ namespace AnkiU
             {
                 ChangeTitleBarToNightMode();
                 ChangeStatusBarToNightMode();
-                commandBarBindBackground.Background = UIHelper.CommandBarAcrylicDarkBrush;
-                commandBar.Background = UIHelper.DarkerBrush;
-                commandBar.Foreground = UIHelper.ForeGroundLight;
+                //commandBarBindBackground.Background = UIHelper.CommandBarAcrylicDarkBrush;
+                //commandBar.Background = UIHelper.DarkerBrush;
+                //commandBar.Foreground = UIHelper.ForeGroundLight;
                 RootSplitView.Foreground = UIHelper.ForeGroundLight;
             }
             else
             {
                 ChangeTitleBarToDayMode();
                 ChangeStatusBarToDayMode();
-                commandBarBindBackground.Background = UIHelper.CommandBarAcrylicLightBrush;
-                commandBar.Background = new SolidColorBrush(Colors.LightGray);
-                commandBar.Foreground = new SolidColorBrush(Colors.Black);
+                //commandBarBindBackground.Background = UIHelper.CommandBarAcrylicLightBrush;
+                //commandBar.Background = new SolidColorBrush(Colors.LightGray);
+                //commandBar.Foreground = new SolidColorBrush(Colors.Black);
                 RootSplitView.Foreground = new SolidColorBrush(Colors.Black);
             }
         }
@@ -2104,7 +2262,7 @@ namespace AnkiU
             if(isContinue)
                 UserPrefs.IsFullSyncRequire = true;
             return isContinue;
-        }        
+        }
 
         private void HelpSplitViewPaneClosedHandler(SplitView sender, object args)
         {            
@@ -2360,8 +2518,14 @@ namespace AnkiU
             if (contentFrame.Content is SettingPage)
                 return;
 
-            splitView.IsPaneOpen = false;
+            //splitView.IsPaneOpen = false;
             contentFrame.Navigate(typeof(SettingPage), this);            
+        }
+
+        private void SettingClickHandler(object sender, RoutedEventArgs e)
+        {
+            splitView.IsPaneOpen = false;
+            contentFrame.Navigate(typeof(SettingPage), this);
         }
 
         private async void OnDownloadDeckButtonClick()
@@ -2382,7 +2546,7 @@ namespace AnkiU
 
         private void OnStatsButtonClick()
         {
-            RootSplitView.IsPaneOpen = false;
+            //RootSplitView.IsPaneOpen = false;
             Stats.IsWholeCollection = true;
             contentFrame.Navigate(typeof(StatsPage), this);
         }
@@ -2417,13 +2581,13 @@ namespace AnkiU
 
         private void OnManageNotetypeClickHandler()
         {
-            splitView.IsPaneOpen = false;
+            //splitView.IsPaneOpen = false;
             contentFrame.Navigate(typeof(ModelEditor), this);
         }
 
         private void OnManageTagsClickHandler()
         {
-            splitView.IsPaneOpen = false;
+            //splitView.IsPaneOpen = false;
             contentFrame.Navigate(typeof(TagManager), this);
         }
 
@@ -2431,7 +2595,7 @@ namespace AnkiU
         {
             MediaBackupFlyout mediaBackupFlyout = new MediaBackupFlyout(Collection);
 
-            splitView.IsPaneOpen = false;
+            //splitView.IsPaneOpen = false;
             mediaBackupFlyout.ShowFlyout(commandBar, FlyoutPlacementMode.Bottom);
         }
 
@@ -2515,7 +2679,7 @@ namespace AnkiU
         {
             InsertMediaFlyout flyout = new InsertMediaFlyout(Collection);
 
-            splitView.IsPaneOpen = false;
+            //splitView.IsPaneOpen = false;
             flyout.ShowFlyout(commandBar, FlyoutPlacementMode.Bottom);
         }
 
@@ -2523,7 +2687,7 @@ namespace AnkiU
         {
             InitAllHelpsIfNeeded();
 
-            splitView.IsPaneOpen = false;
+            //splitView.IsPaneOpen = false;
 
             allHelps.Foreground = commandBar.Foreground;
             helpSplitView.IsHitTestVisible = true;

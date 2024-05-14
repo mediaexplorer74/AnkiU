@@ -374,7 +374,7 @@ namespace TestAnkiCore
             {
                 await file.CopyAsync(tempFolder3);
             }
-            colClient.ReOpen();
+            await colClient.ReOpen();
             Collection col3 = await Storage.OpenOrCreateCollection(tempFolder3, Utils.collectionName);
             var client2 = new Syncer(col3, server);
             Assert.AreEqual("noChanges", (await client2.Sync())[0]);

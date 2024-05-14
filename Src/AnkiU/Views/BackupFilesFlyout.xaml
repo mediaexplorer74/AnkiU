@@ -47,7 +47,7 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-                    <Button x:Name="cancelButton" Margin="0,0,5,0"  Grid.Row="2" HorizontalAlignment="Stretch" Content="Cancel" Style="{StaticResource ButtonRevealStyle}" Click="CancelButtonClickHandler"/>
+                    <Button x:Name="cancelButton" Margin="0,0,5,0"  Grid.Row="2" HorizontalAlignment="Stretch" Content="Cancel" Style="{StaticResource DefaultButtonRevealStyle}" Click="CancelButtonClickHandler"/>
                 </Grid>
             </ContentPresenter>
         </Flyout>

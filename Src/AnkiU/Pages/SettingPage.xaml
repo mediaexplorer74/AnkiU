@@ -78,7 +78,7 @@
                                              Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Left" 
                                  Foreground="{Binding Foreground, ElementName=userControl}">
                             </controls:NumbericTextBox>
-                            <Button Grid.Column="3" Style="{StaticResource ButtonRevealStyle}" Background="Transparent"
+                            <Button Grid.Column="3" Style="{StaticResource DefaultButtonRevealStyle}" Background="Transparent"
                                      Padding="0,0,0,5" x:Name="openBackUpFolderButton" HorizontalAlignment="Left" Width="40"  VerticalAlignment="Stretch"
                                      Grid.Row="1" Margin="5, 0, 0, 0" VerticalContentAlignment="Bottom"
                                     Click="OpenBackUpFolderClick">
@@ -129,7 +129,8 @@
                         </Grid>
                     </PivotItem>
 
-                    <PivotItem x:Name="sync"  Background="{Binding Background, ElementName=learningTab}" Padding="0" Margin="0" >
+                    <PivotItem x:Name="sync"  Background="{Binding Background, ElementName=learningTab}" 
+                               Padding="0" Margin="0" >
                         <PivotItem.Header >
                             <TextBlock Text="SYNC"                            
                             FontSize="15"                            
@@ -142,7 +143,7 @@
                         </PivotItem.Header>
                         <Grid Margin="5,10,0,0" >
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="220" />
                                 <ColumnDefinition Width="5" />
                                 <ColumnDefinition Width="*" MaxWidth="200"/>
                             </Grid.ColumnDefinitions>
@@ -156,10 +157,12 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="Sync service" TextAlignment="Right" VerticalAlignment="Center"  Foreground="{Binding Foreground, ElementName=userControl}" />
+                            <TextBlock Text="Sync service" TextAlignment="Right" 
+                                       VerticalAlignment="Center"  
+                                       Foreground="{Binding Foreground, ElementName=userControl}" />
                             <ComboBox x:Name="syncServiceCombobox" Grid.Column="2" SelectedIndex="0"
                                        Foreground="{Binding Foreground, ElementName=userControl}" 
-                                      Background="Transparent" >
+                                      Background="Transparent" HorizontalAlignment="Left">
                                 <ComboBoxItem Content="OneDrive" />
                                 <ComboBoxItem Content="AnkiWeb" />
                             </ComboBox>
@@ -201,7 +204,7 @@
                                       BorderBrush="{Binding Foreground, ElementName=userControl}"
                                       />
 
-                            <TextBlock Grid.Row="6" x:Name="syncMediaAnkiWebNotify" Text="Don't Display AnkiWeb Media Warning Message" Margin="0,0,0,3"  Foreground="{Binding Foreground, ElementName=userControl}" 
+                            <TextBlock Grid.Row="6" x:Name="syncMediaAnkiWebNotify" Text="Dont display media warning msg" Margin="0,0,0,3"  Foreground="{Binding Foreground, ElementName=userControl}" 
                                        VerticalAlignment="Center" HorizontalAlignment="Right"/>
                             <CheckBox Grid.Row="6" Grid.Column="2" x:Name="syncMediaAnkiWebNotifyCheckBox"
                                       VerticalAlignment="Center" HorizontalAlignment="Left"

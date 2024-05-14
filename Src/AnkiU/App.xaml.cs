@@ -113,7 +113,7 @@ namespace AnkiU
                 {
                     titleBar.ButtonBackgroundColor = Windows.UI.Colors.Transparent;
                     titleBar.ButtonInactiveBackgroundColor = Windows.UI.Colors.Transparent;
-                    titleBar.ButtonHoverBackgroundColor = UIUtilities.UIHelper.ButtonBackGroundNormal.Color;
+                    titleBar.ButtonHoverBackgroundColor = Windows.UI.Colors.DarkGray;//UIUtilities.UIHelper.ButtonBackGroundNormal.Color;
                     titleBar.ButtonHoverForegroundColor = Windows.UI.Colors.White;
                 }
             }

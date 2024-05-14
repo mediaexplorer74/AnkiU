@@ -60,26 +60,48 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="Export to:"/>
-                        <TextBox Margin="5,0,0,0" Grid.Column="1" Tag="Black" x:Name="exportFlyoutTextBox" BorderBrush="Black" TextAlignment="Left" VerticalAlignment="Center" HorizontalAlignment="Stretch" IsReadOnly="True"  />
-                        <Button x:Name="exportFolderPickerButton" Style="{StaticResource ButtonRevealStyle}" Background="Transparent" 
-                                Grid.Column="2" Padding="0" Margin="5,0,0,0" Height="35" Width="40" Click="ExportFolderPickerButtonClickHandler" >
-                            <Path Style="{StaticResource OpenFolderIcon}" Margin="0" Width="30" Fill="Transparent" Stroke="Black" RenderTransformOrigin="0.5,0.5">
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" 
+                                   Text="Export to:"/>
+                        <TextBox Margin="5,0,0,0" Grid.Column="1" Tag="Black" 
+                                 x:Name="exportFlyoutTextBox" 
+                                 BorderBrush="Black" TextAlignment="Left" 
+                                 VerticalAlignment="Center" 
+                                 HorizontalAlignment="Stretch" IsReadOnly="True"  />
+                        <Button x:Name="exportFolderPickerButton" 
+                                Style="{StaticResource TextBlockButtonStyle}" 
+                                Background="Transparent" 
+                                Grid.Column="2" Padding="0" 
+                                Margin="5,0,0,0" Height="35" 
+                                Width="40" 
+                                Click="ExportFolderPickerButtonClickHandler" >
+                            <Path Style="{StaticResource OpenFolderIcon}" Margin="0" Width="30" 
+                                  Fill="Transparent" Stroke="Black" RenderTransformOrigin="0.5,0.5">
                                 <Path.RenderTransform>
                                     <CompositeTransform ScaleX="0.7" ScaleY="0.7"/>
                                 </Path.RenderTransform>
                             </Path>
                         </Button>
                     </Grid>
-                    <CheckBox x:Name="exportScheduleCheckBox" Grid.Row="1" HorizontalAlignment="Stretch" Content="Include learning history (schedule)"/>
-                    <CheckBox x:Name="exportMediaCheckBox" Grid.Row="2" HorizontalAlignment="Stretch" Content="Include media files"/>
-                    <Button x:Name="exportOkButton" Margin="0,0,0,0" Width="140" Grid.Row="3" HorizontalAlignment="Left" Content="Export" Style="{StaticResource ButtonBlue}" Click="ExportOkButtonClickHandler" BorderThickness="0"/>
-                    <Button x:Name="exportCancelButton" Margin="0,0,0,0" Width="140" Grid.Row="3" Background="Transparent" HorizontalAlignment="Right" Content="Cancel" Style="{StaticResource ButtonGray}" Click="FlyoutCancelButtonClickHandler" BorderBrush="Black" BorderThickness="1"/>
+                    <CheckBox x:Name="exportScheduleCheckBox" Grid.Row="1" 
+                              HorizontalAlignment="Stretch" Content="Include learning history (schedule)"/>
+                    <CheckBox x:Name="exportMediaCheckBox" Grid.Row="2" 
+                              HorizontalAlignment="Stretch" Content="Include media files"/>
+                    <Button x:Name="exportOkButton" Margin="0,0,0,0" 
+                            Width="140" Grid.Row="3" HorizontalAlignment="Left" 
+                            Content="Export" Style="{StaticResource ButtonBlue}" 
+                            Click="ExportOkButtonClickHandler" BorderThickness="0"/>
+                    <Button x:Name="exportCancelButton" Margin="0,0,0,0" 
+                            Width="140" Grid.Row="3" Background="Transparent" 
+                            HorizontalAlignment="Right" Content="Cancel" 
+                            Style="{StaticResource ButtonGray}" 
+                            Click="FlyoutCancelButtonClickHandler" 
+                            BorderBrush="Black" BorderThickness="1"/>
                 </Grid>
             </ContentPresenter>
         </Flyout>
 
-        <Flyout x:Name="configureFlyout" Placement="Bottom" FlyoutPresenterStyle="{StaticResource DefaultFlyoutPresenterStyle}">
+        <Flyout x:Name="configureFlyout" Placement="Bottom" 
+                FlyoutPresenterStyle="{StaticResource DefaultFlyoutPresenterStyle}">
             <ContentPresenter >
                 <Grid Width="300">
                     <Grid.RowDefinitions>
@@ -94,7 +116,8 @@
                             HorizontalAlignment="Left" Height="35" Content="OK"                              
                             HorizontalContentAlignment="Center" Click="ConfigureFlyoutOkButtonClickHandler" />
 
-                    <Button  Style="{StaticResource ButtonGray}" BorderThickness="1" BorderBrush="Black" Background="Transparent"
+                    <Button  Style="{StaticResource ButtonGray}" BorderThickness="1" BorderBrush="Black" 
+                             Background="Transparent"
                              Width="135"
                             HorizontalAlignment="Right" Height="35" Content="Cancel"                              
                             HorizontalContentAlignment="Center" Click="FlyoutCancelButtonClickHandler"/>
@@ -134,7 +157,7 @@
                                              Width="20" Height="20" 
                                              HelpText="{x:Bind HelpText}" Visibility="{x:Bind HelpTextVisibility}" />
 
-                                    <Button  Style="{StaticResource DefaultButtonRevealStyle}" 
+                                    <Button  Style="{StaticResource ButtonBlue}" 
                                              Foreground="{StaticResource ButtonBackGroundAnalogousLeft}"
                                              Grid.Column="4" Background="Transparent"
                                              Width="35" Height="35" Padding="0"
@@ -156,9 +179,11 @@
                                         </SymbolIcon>
                                     </Button>
 
-                                    <Button VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="8" Width="35" Height="35" Padding="0"  Visibility="{x:Bind EditVisibility}"
+                                    <Button VerticalAlignment="Center" HorizontalAlignment="Left" 
+                                            Grid.Column="8" Width="35" Height="35" Padding="0"  Visibility="{x:Bind EditVisibility}"
                                             Click="ConfigureFlyoutDeleteButtonClick" Background="Transparent"
-                                             Style="{StaticResource DefaultButtonRevealStyle}" Foreground="{StaticResource ButtonBackGroundAnalogousLeft}" 
+                                             Style="{StaticResource ButtonBlue}" 
+                                            Foreground="{StaticResource ButtonBackGroundAnalogousLeft}" 
                                             >
                                         <SymbolIcon Symbol="Delete" RenderTransformOrigin="0.5,0.5" >
                                             <SymbolIcon.RenderTransform>

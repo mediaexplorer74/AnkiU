@@ -292,7 +292,7 @@ namespace AnkiU.Pages
         private void ShowAllButtonOfThisPage()
         {
             mainPage.DragAndDropButton.Visibility = Visibility.Visible;
-            mainPage.RootSplitView.IsPaneToggleButtonVisible = true;
+            //mainPage.RootSplitView.IsPaneToggleButtonVisible = true;
             mainPage.HelpSplitView.Visibility = Visibility.Visible;
             mainPage.AddButton.Visibility = Visibility.Visible;
             mainPage.SyncButton.Visibility = Visibility.Visible;
@@ -317,7 +317,7 @@ namespace AnkiU.Pages
         private void HideAllButtonOfThisPage()
         {
             mainPage.DragAndDropButton.Visibility = Visibility.Collapsed;
-            mainPage.RootSplitView.IsPaneToggleButtonVisible = false;
+            //mainPage.RootSplitView.IsPaneToggleButtonVisible = false;
             mainPage.HelpSplitView.Visibility = Visibility.Collapsed;
             mainPage.AddButton.Visibility = Visibility.Collapsed;
             mainPage.SyncButton.Visibility = Visibility.Collapsed;

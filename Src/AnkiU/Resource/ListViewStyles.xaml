@@ -82,43 +82,41 @@
                         VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                         ContentMargin="{TemplateBinding Padding}"
                         CheckMode="{ThemeResource ListViewItemCheckMode}"
-                        RevealBackground="{ThemeResource ListViewItemRevealBackground}"
-                        RevealBorderThickness="3"
-                        RevealBorderBrush="{ThemeResource ListViewItemRevealBorderBrush}">
+                        >
 
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal" />
                                 <VisualState x:Name="Selected" />
 
-                                <VisualState x:Name="PointerOver">
+                                <!--VisualState x:Name="PointerOver">
                                     <VisualState.Setters>
-                                        <Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />
+                                        <Setter Target="Root.(Brush.State)" Value="PointerOver" />
                                     </VisualState.Setters>
-                                </VisualState>
+                                </>
 
                                 <VisualState x:Name="PointerOverSelected">
                                     <VisualState.Setters>
-                                        <Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />
+                                        <Setter Target="Root.(Brush.State)" Value="PointerOver" />
                                     </VisualState.Setters>
                                 </VisualState>
                                 <VisualState x:Name="PointerOverPressed">
                                     <VisualState.Setters>
-                                        <Setter Target="Root.(RevealBrush.State)" Value="Pressed" />
+                                        <Setter Target="Root.(Brush.State)" Value="Pressed" />
                                     </VisualState.Setters>
                                 </VisualState>
 
                                 <VisualState x:Name="Pressed">
                                     <VisualState.Setters>
-                                        <Setter Target="Root.(RevealBrush.State)" Value="Pressed" />
+                                        <Setter Target="Root.(Brush.State)" Value="Pressed" />
                                     </VisualState.Setters>
                                 </VisualState>
 
                                 <VisualState x:Name="PressedSelected">
                                     <VisualState.Setters>
-                                        <Setter Target="Root.(RevealBrush.State)" Value="Pressed" />
+                                        <Setter Target="Root.(Brush.State)" Value="Pressed" />
                                     </VisualState.Setters>
-                                </VisualState>
+                                </VisualState-->
                             </VisualStateGroup>
 
                             <VisualStateGroup x:Name="DisabledStates">
@@ -126,7 +124,7 @@
 
                                 <VisualState x:Name="Disabled">
                                     <VisualState.Setters>
-                                        <Setter Target="Root.RevealBorderThickness" Value="0" />
+                                        <Setter Target="Root.BorderThickness" Value="0" />
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>
@@ -222,43 +220,41 @@
                         VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                         ContentMargin="{TemplateBinding Padding}"
                         CheckMode="{ThemeResource ListViewItemCheckMode}"
-                        RevealBackground="{ThemeResource ListViewItemRevealBackground}"
-                        RevealBorderThickness="{ThemeResource ListViewItemRevealBorderThemeThickness}"
-                        RevealBorderBrush="{ThemeResource ListViewItemRevealBorderBrush}">
+                       >
 
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal" />
                                 <VisualState x:Name="Selected" />
 
-                                <VisualState x:Name="PointerOver">
+                                <!--VisualState x:Name="PointerOver">
                                     <VisualState.Setters>
-                                        <Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />
+                                        <Setter Target="Root.(Brush.State)" Value="PointerOver" />
                                     </VisualState.Setters>
-                                </VisualState>
+                                </>
 
                                 <VisualState x:Name="PointerOverSelected">
                                     <VisualState.Setters>
-                                        <Setter Target="Root.(RevealBrush.State)" Value="PointerOver" />
+                                        <Setter Target="Root.(Brush.State)" Value="PointerOver" />
                                     </VisualState.Setters>
                                 </VisualState>
                                 <VisualState x:Name="PointerOverPressed">
                                     <VisualState.Setters>
-                                        <Setter Target="Root.(RevealBrush.State)" Value="Pressed" />
+                                        <Setter Target="Root.(Brush.State)" Value="Pressed" />
                                     </VisualState.Setters>
                                 </VisualState>
 
                                 <VisualState x:Name="Pressed">
                                     <VisualState.Setters>
-                                        <Setter Target="Root.(RevealBrush.State)" Value="Pressed" />
+                                        <Setter Target="Root.(Brush.State)" Value="Pressed" />
                                     </VisualState.Setters>
                                 </VisualState>
 
                                 <VisualState x:Name="PressedSelected">
                                     <VisualState.Setters>
-                                        <Setter Target="Root.(RevealBrush.State)" Value="Pressed" />
+                                        <Setter Target="Root.(Brush.State)" Value="Pressed" />
                                     </VisualState.Setters>
-                                </VisualState>
+                                </VisualState-->
                             </VisualStateGroup>
 
                             <VisualStateGroup x:Name="DisabledStates">
@@ -266,7 +262,7 @@
 
                                 <VisualState x:Name="Disabled">
                                     <VisualState.Setters>
-                                        <Setter Target="Root.RevealBorderThickness" Value="0" />
+                                        <Setter Target="Root.BorderThickness" Value="0" />
                                     </VisualState.Setters>
                                 </VisualState>
                             </VisualStateGroup>

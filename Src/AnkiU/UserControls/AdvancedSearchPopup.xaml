@@ -8,7 +8,7 @@
     mc:Ignorable="d"
     x:Name="userControl"
     Foreground="Black"
-    Background="{StaticResource DefaultAcrylicBrush}"
+    Background="{StaticResource AppBarBackgroundThemeBrush}"
     xmlns:views="using:AnkiU.Views" 
     SizeChanged="WindowSizeChanged"
     d:DesignHeight="300"        

@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="ME.AnkiUV1" Publisher="CN=Admin" Version="1.4.6.0" />
+  <Identity Name="ME.AnkiUV1" Publisher="CN=mediaexplorer" Version="1.4.6.0" />
   <mp:PhoneIdentity PhoneProductId="73352238-f395-4f54-9a7e-823ae36d3d0f" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>TestAnkiCore</DisplayName>
+    <DisplayName>AnkiU 1.4.6</DisplayName>
     <PublisherDisplayName>mediaexplorer</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="vstest.executionengine.universal.App" Executable="$targetnametoken$.exe" EntryPoint="AnkiU.App">
-      <uap:VisualElements DisplayName="AnkiU" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="AnkiU App" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="AnkiU 1.4.6" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="AnkiU App" BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png">
           <uap:ShowNameOnTiles>
             <uap:ShowOn Tile="square150x150Logo" />
@@ -24,9 +24,10 @@
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
         <uap:InitialRotationPreference>
-          <uap:Rotation Preference="landscape"/>
-          <uap:Rotation Preference="portrait"/>
-          <uap:Rotation Preference="landscapeFlipped"/></uap:InitialRotationPreference>
+          <uap:Rotation Preference="portrait" />
+          <uap:Rotation Preference="landscape" />
+          <uap:Rotation Preference="landscapeFlipped" />
+        </uap:InitialRotationPreference>
       </uap:VisualElements>
     </Application>
   </Applications>
