@@ -6,6 +6,7 @@ This is the source code of Anki Universal app on Windows 10 (Mobile)
 
 ## My 2 cents
 - Fixing (hiding) MainPage Exception dialog
+- Some Mobile UI improvements/adaptation(s)
 - 16299 -> 15063 (for W10M compatibility)
 
 ## Screenshots
