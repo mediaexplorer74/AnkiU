@@ -8,14 +8,12 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"    
     Padding="0"
-    BorderBrush="{StaticResource ButtonBackGroundNormal}"
-    Tag="{StaticResource ButtonBackGroundNormal}"
     d:DesignHeight="35"
     d:DesignWidth="400">
 
     <UserControl.Resources>
 
-        <Flyout x:Name="newTagFlyout" x:Key="NewTagFlyoutTemplate" FlyoutPresenterStyle="{StaticResource DefaultFlyoutPresenterStyle}">
+        <Flyout x:Name="newTagFlyout" x:Key="NewTagFlyoutTemplate" >
             <ContentPresenter>
                 <Grid Width="300" >
                     <Grid.RowDefinitions>
@@ -34,7 +32,7 @@
         <Flyout x:Name="tagsViewFlyout" Placement="Top" x:Key="TagsViewFlyoutTemplate"  
                 FlyoutPresenterStyle="{StaticResource TagFlyoutPresenterStyle}"
                 Closed="TagsViewFlyoutClosedHandler">
-            <FlyoutPresenter x:Name="tagsFlyoutcontentPresenter" BorderBrush="Transparent" BorderThickness="0" Background="Transparent">
+            <FlyoutPresenter x:Name="tagsFlyoutcontentPresenter" BorderBrush="Transparent" BorderThickness="0" >
                 <Grid x:Name="tagsNameGrid"  MaxWidth="400"
                      ScrollViewer.HorizontalScrollMode="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     <Grid.RowDefinitions>
@@ -65,12 +63,13 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </ScrollViewer>
-                   
+
                     <TextBox Grid.Row="1" PlaceholderText="Search..." x:Name="searchTextBox"
-                             VerticalAlignment="Center"         
-                             HorizontalAlignment="Stretch" TextWrapping="Wrap"
-                             TextAlignment="Left" IsSpellCheckEnabled="False"
-                             TextChanged="SearchTextBoxTextChangedHandler" >
+                                 VerticalAlignment="Center"         
+                                 Style="{StaticResource OldTextBoxStyle}"
+                                 HorizontalAlignment="Stretch" TextWrapping="Wrap"
+                                 TextAlignment="Left" IsSpellCheckEnabled="False"
+                                 TextChanged="SearchTextBoxTextChangedHandler" >
                         <TextBox.InputScope>
                             <InputScope>
                                 <InputScope.Names>
@@ -96,10 +95,11 @@
                    Foreground="{Binding Foreground, ElementName=userControl}"
                    VerticalAlignment="Center" Margin="5"/>
 
-        <Button x:Name="expandTagButton" Style="{StaticResource TagButton}"                 
+        <Button x:Name="expandTagButton" Style="{StaticResource ButtonGray}"                 
                 Background="Transparent"
-                BorderBrush="{Binding BorderBrush, ElementName=userControl}"             
-                Foreground="{Binding Tag, ElementName=userControl}"
+                BorderBrush="{StaticResource ButtonBackGroundNormal}"
+                BorderThickness ="0,0,0,2"               
+                Foreground="{StaticResource ButtonBackGroundNormal}"
                 Click="ExpandTagButtonClickHandler"
                 Grid.Column="1" VerticalAlignment="Stretch" 
                 HorizontalAlignment="Stretch" MinHeight="30"
@@ -124,7 +124,7 @@
                             Style="{StaticResource ButtonContentOcpacity}"
                             Background="Transparent"
                             BorderThickness="0" Visibility="{Binding AddVisibility, ElementName=userControl, Mode=OneWay}"                 
-                            Foreground="{Binding Tag, ElementName=userControl}"
+                            Foreground="{StaticResource ButtonBackGroundNormal}"
                             Click="NewTagButtonClickHandler" >
             <SymbolIcon Symbol="Add" />
         </Button>

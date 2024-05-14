@@ -441,7 +441,6 @@ namespace AnkiU.AnkiCore
             }
             scm = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             SetIsModified();
-            Save();
             return true;
         }
 

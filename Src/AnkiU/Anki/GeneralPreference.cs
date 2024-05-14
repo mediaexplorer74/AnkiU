@@ -79,22 +79,6 @@ namespace AnkiU.Anki
             }
         }
 
-        private bool isBlackNightModeLearning;
-        [SQLite.Net.Attributes.Column("IsBlackNightModeLearning")]
-        public bool IsBlackNightModeLearning
-        {
-            get { return isBlackNightModeLearning; }
-            set
-            {
-                if (isBlackNightModeLearning == value)
-                    return;
-
-                isBlackNightModeLearning = value;
-                IsModified = true;
-            }
-        }
-
-
         private bool isReadNightMode;
         [SQLite.Net.Attributes.Column("IsReadNightMode")]
         public bool IsReadNightMode
@@ -276,36 +260,6 @@ namespace AnkiU.Anki
             }
         }
 
-        private bool isSyncOnClose;
-        [SQLite.Net.Attributes.Column("IsSyncOnClose")]
-        public bool IsSyncOnClose
-        {
-            get { return isSyncOnClose; }
-            set
-            {
-                if (isSyncOnClose == value)
-                    return;
-
-                isSyncOnClose = value;
-                IsModified = true;
-            }
-        }
-
-        private bool isNotShowMediaNoticeAnkiWebSync;
-        [SQLite.Net.Attributes.Column("isShowMediaNoticeAnkiWebSync")]
-        public bool IsNotShowMediaNoticeAnkiWebSync
-        {
-            get { return isNotShowMediaNoticeAnkiWebSync; }
-            set
-            {
-                if (isNotShowMediaNoticeAnkiWebSync == value)
-                    return;
-
-                isNotShowMediaNoticeAnkiWebSync = value;
-                IsModified = true;
-            }
-        }
-
         private bool isShowLeechActionOnce;
         [SQLite.Net.Attributes.Column("IsShowLeechActionOnce")]
         public bool IsShowLeechActionOnce
@@ -444,21 +398,6 @@ namespace AnkiU.Anki
             }
         }
 
-        private bool isChangedSaveShortcutOpen;
-        [SQLite.Net.Attributes.Column("IsChangedSaveShortcutOpen")]
-        public bool IsChangedSaveShortcutOpen
-        {
-            get { return isChangedSaveShortcutOpen; }
-            set
-            {
-                if (isChangedSaveShortcutOpen == value)
-                    return;
-
-                isChangedSaveShortcutOpen = value;
-                IsModified = true;
-            }
-        }
-
         public static GeneralPreference GetDefaultPreference()
         {
             GeneralPreference userPrefs = new GeneralPreference();
@@ -466,7 +405,6 @@ namespace AnkiU.Anki
             userPrefs.IsDeckListView = false;
             userPrefs.SortDeckBy = 0;
             userPrefs.IsReadNightMode = false;
-            userPrefs.IsBlackNightModeLearning = false;
             userPrefs.ZoomLevel = MainPage.GetDefaultZoomLevel();
             userPrefs.IsHasInkDeckPreference = false;
             userPrefs.IsHasTextSynthDeckPreference = false;
@@ -482,14 +420,10 @@ namespace AnkiU.Anki
             userPrefs.LastSyncTime = 0;
             userPrefs.IsSyncMedia = false;
             userPrefs.isSyncOnOpen = false;
-            userPrefs.isSyncOnClose = true;
-            userPrefs.isNotShowMediaNoticeAnkiWebSync = false;
 
             userPrefs.isOneHandMode = false;
             userPrefs.isLeftHand = false;
             userPrefs.answerButtonPosition = 0;
-
-            userPrefs.isChangedSaveShortcutOpen = false;
 
             userPrefs.lastAppVer = MainPage.APP_VER;
 

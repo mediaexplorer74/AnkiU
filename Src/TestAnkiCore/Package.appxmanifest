@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="ME.TestAnkiCoreV1" Publisher="CN=mediaexplorer" Version="1.0.0.0" />
+  <Identity Name="73352238-f395-4f54-9a7e-823ae36d3d0f" Publisher="CN=lebin" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="73352238-f395-4f54-9a7e-823ae36d3d0f" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>TestAnkiCore</DisplayName>
-    <PublisherDisplayName>mediaexplorer</PublisherDisplayName>
+    <PublisherDisplayName>lebin</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -23,11 +23,6 @@
           </uap:ShowNameOnTiles>
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
-        <uap:InitialRotationPreference>
-          <uap:Rotation Preference="portrait" />
-          <uap:Rotation Preference="landscape" />
-          <uap:Rotation Preference="landscapeFlipped" />
-        </uap:InitialRotationPreference>
       </uap:VisualElements>
     </Application>
   </Applications>

@@ -48,7 +48,8 @@ namespace AnkiU.UserControls
     {
         private CoreDispatcher dispatcher;
         private string cardContent;
-        private string htmlPath;
+
+        public const string HTML_PATH = "/html/card.html";
 
         public delegate void KeyDownEventHandler(Windows.System.VirtualKey key);
         public delegate void CardViewLoadHandler();
@@ -102,11 +103,6 @@ namespace AnkiU.UserControls
 
         public void InitWebView()
         {
-            if(MainPage.UserPrefs.IsBlackNightModeLearning)
-                htmlPath = "/html/cardBlack.html";
-            else
-                htmlPath = "/html/card.html";
-
             webViewControl = new WebView();
             ScrollViewer.SetVerticalScrollBarVisibility(webViewControl, ScrollBarVisibility.Hidden);
             webViewGrid.Children.Add(webViewControl);
@@ -166,7 +162,7 @@ namespace AnkiU.UserControls
 
         public void NavigateToBlankPage()
         {
-            HtmlHelpter.LoadLocalHtml(webViewControl, htmlPath);
+            HtmlHelpter.LoadLocalHtml(webViewControl, HTML_PATH);
         }
 
 
@@ -186,7 +182,7 @@ namespace AnkiU.UserControls
             isWebViewReady = false;
             webViewGrid.Children.Clear();
             webViewControl = null;
-            GC.Collect(); //Enable again in Fall Creator Update
+            //GC.Collect(); //Disable in Creator Update
         }
 
         private void ClearSpeechSynthIfNeeded()
@@ -255,13 +251,13 @@ namespace AnkiU.UserControls
 
         private void UserControlLoadedHandler(object sender, RoutedEventArgs e)
         {
-            HtmlHelpter.LoadLocalHtml(webViewControl, htmlPath);
+            HtmlHelpter.LoadLocalHtml(webViewControl, HTML_PATH);
         }
 
         public void ReloadCardView()
         {
             InitWebView();
-            HtmlHelpter.LoadLocalHtml(webViewControl, htmlPath);
+            HtmlHelpter.LoadLocalHtml(webViewControl, HTML_PATH);
         }
 
         public async void KeyDownEventFire(int keyCode)
@@ -477,7 +473,6 @@ namespace AnkiU.UserControls
 
         private async Task StartPlayTextToSpeech(string text)
         {
-            text = Utils.StripNoTTSContent(text);
             text = Utils.StripHTML(text);
             await speechSynth.StartTextToSpeech(text);
         }

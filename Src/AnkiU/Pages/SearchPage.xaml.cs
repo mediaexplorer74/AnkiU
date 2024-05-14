@@ -81,9 +81,6 @@ namespace AnkiU.Pages
 
         private void ChangeReadMode(bool isNightMode)
         {
-            if (this.isNightMode == isNightMode)
-                return;
-
             this.isNightMode = isNightMode;
             ChangeBackgroundColor();
             if (cardViewPopup != null)
@@ -94,7 +91,16 @@ namespace AnkiU.Pages
         private void ChangeBackgroundColor()
         {
             UIHelper.ToggleNightLight(isNightMode, this);
-            cardInformationView.ChangeReadMode(isNightMode);
+            if (isNightMode)
+            {
+                cardInformationView.Background = new SolidColorBrush(UIHelper.ContentNightModeColor);
+                searchTextBox.Background = new SolidColorBrush(Windows.UI.Colors.Black);
+            }
+            else
+            {
+                cardInformationView.Background = new SolidColorBrush(Windows.UI.Colors.White);
+                searchTextBox.Background = cardInformationView.Background;
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

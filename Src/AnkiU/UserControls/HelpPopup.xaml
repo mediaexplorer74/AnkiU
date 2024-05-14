@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     x:Name="userControl"
-    Background="{StaticResource AppBarBackgroundThemeBrush}"
+    Background="White"
     d:DesignHeight="300"
     d:DesignWidth="400">
 

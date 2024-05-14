@@ -17,26 +17,18 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <TextBlock x:Name="label" Text="NOTE TYPE" FontWeight="SemiBold" 
-                   IsTextScaleFactorEnabled="False" 
-                   VerticalAlignment="Center" 
-                   HorizontalAlignment="Stretch" 
-                   TextAlignment="Center" 
+        <TextBlock x:Name="label" Text="NOTE TYPE" FontWeight="SemiBold" IsTextScaleFactorEnabled="False" 
+                   VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Center" 
                    Foreground="{Binding TextForeGround, ElementName=userControl}"/>
 
         <ComboBox x:Name="comboBox" ItemsSource="{Binding}"  Grid.Column="2"
                   Background="Transparent"
                   VerticalAlignment="Stretch" 
-                  BorderBrush="{Binding BorderBrush,ElementName=userControl}"
                   Foreground="{Binding TextForeGround, ElementName=userControl}"
-                  HorizontalAlignment="Stretch" 
-                  SelectionChanged="ComboBoxSelectionChangedHandler">
+                  HorizontalAlignment="Stretch" SelectionChanged="ComboBoxSelectionChangedHandler">
             <ComboBox.ItemTemplate>
                 <DataTemplate x:DataType="data:AnkiModelInformation">
-                    <!--Foreground="Yellow" -->
-                    <TextBlock Foreground="Yellow"
-                               Text="{x:Bind Name, Mode=OneWay}" 
-                               Loaded="TextBlock_Loaded"/>
+                    <TextBlock Text="{x:Bind Name, Mode=OneWay}" Loaded="TextBlock_Loaded"/>
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>

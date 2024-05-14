@@ -29,6 +29,7 @@ using Windows.Foundation;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using ColorPicker = AnkiU.UserControls.ColorPicker;
 
 namespace AnkiU.Anki
 {    
@@ -40,8 +41,8 @@ namespace AnkiU.Anki
         private ButtonPassingWebToWinRT buttonEventNotify;
         private EditableFieldPassWebToWinRT editableFieldNotify;
 
-        private UserControls.ColorPicker foreColorPicker = null;
-        private UserControls.ColorPicker backColorPicker = null;
+        private ColorPicker foreColorPicker = null;
+        private ColorPicker backColorPicker = null;
 
         private WebView webViewControl;
         public WebView WebViewControl { get { return webViewControl; } }
@@ -271,10 +272,9 @@ namespace AnkiU.Anki
             webViewGrid.Children.Clear();
             webViewControl = null;
 
-            //Update: Enable this again on "Fall Creator Update"
             //Disable on "Creator Update" because this can cause system crashes
             //Without this, GC will run when it needs to release memory, so it's not a big problem
-            GC.Collect();
+            //GC.Collect(); 
         }
 
         public async Task InitRichTextEditor()
@@ -490,7 +490,7 @@ namespace AnkiU.Anki
         {
             if (foreColorPicker == null)
             {
-                foreColorPicker = new UserControls.ColorPicker();
+                foreColorPicker = new ColorPicker();
                 foreColorPicker.ColorChoose += OnForeColorChoose;
             }
             foreColorPicker.ShowFlyout(target, placement);
@@ -507,7 +507,7 @@ namespace AnkiU.Anki
         {
             if (backColorPicker == null)
             {
-                backColorPicker = new UserControls.ColorPicker();
+                backColorPicker = new ColorPicker();
                 backColorPicker.ColorChoose += OnBackColorChoose;
             }
             backColorPicker.ShowFlyout(target, placement);

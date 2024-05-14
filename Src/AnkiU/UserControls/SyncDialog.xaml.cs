@@ -57,11 +57,12 @@ namespace AnkiU.UserControls
             this.dispatcher = dispatcher;
         }
 
-        public void Show()
+        public void Show(bool isNightMode)
         {
             var task = dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {
                 SyncIconRotation.Begin();
+                ChangeReadMode(isNightMode);
 
                 isClosed = false;
                 while (!isClosed)
@@ -77,6 +78,20 @@ namespace AnkiU.UserControls
                 SyncIconRotation.Stop();
                 this.Hide();
             });            
+        }
+
+        public void ChangeReadMode(bool isNightMode)
+        {
+            if(isNightMode)
+            {
+                this.Background = UIHelper.DarkerBrush;
+                this.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
+            }
+            else
+            {
+                this.Background =  new SolidColorBrush(Windows.UI.Colors.White);
+                this.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
+            }
         }
     }
 }

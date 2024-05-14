@@ -59,6 +59,9 @@ using AnkiU.AnkiCore.Exporter;
 using AnkiU.UserControls;
 using System.IO.Compression;
 using Windows.Foundation.Metadata;
+using Microsoft.Graphics.Canvas.UI.Xaml;
+using Microsoft.Graphics.Canvas;
+using Microsoft.Graphics.Canvas.Effects;
 using Windows.UI.Xaml.Media.Imaging;
 using AnkiU.Anki.Syncer;
 using Shared;
@@ -108,6 +111,9 @@ namespace AnkiU
         private string deckToImportName;
         private long deckToImportID = 0;
         private bool isInProtocolActivate = false;
+
+        private CanvasControl canvas;
+        private CanvasDevice canvasDevice;
 
         private CoreCursor cursor = new CoreCursor(CoreCursorType.Arrow, 0);
 
@@ -229,12 +235,7 @@ namespace AnkiU
         public Grid MainGrid { get { return mainGrid; } } 
 
         public SplitView HelpSplitView { get { return helpSplitView; } }
-        public SplitView RootSplitView {
-            get
-            {
-                return splitView;
-            }
-        }
+        public SplitView RootSplitView { get { return splitView; } }
 
         public WindowSizeState WindowSizeState
         {
@@ -248,7 +249,12 @@ namespace AnkiU
                 else
                     return WindowSizeState.wide;
             }
-        }        
+        }
+
+        public Button SplitViewToggleButton
+        {
+            get { return splitViewToggleButton; }
+        }
 
         public AppBarButton DragAndDropButton
         {
@@ -599,7 +605,7 @@ namespace AnkiU
         public MainPage()
         {
             SetMinWindowSupported();
-            SetPreferLaunchSize();
+            SetPreferLauchSize();
 
             this.InitializeComponent();
             currentDispatcher = CoreWindow.GetForCurrentThread().Dispatcher;
@@ -608,45 +614,24 @@ namespace AnkiU
             try
             {
                 NavigationSetup();
+                SetupVisualEffects();
    
                 InitCollectionFinished += InitCollectionFinishedHandler;
                 SyncButton.Click += SyncButtonClickHandler;
-
-                Windows.UI.Core.Preview.SystemNavigationManagerPreview.GetForCurrentView().CloseRequested 
-                    += OnAppCloseRequested;
 
                 //Default startup position is always narrow, but user may change win size in last used time
                 RepositionCommanBar(WINSIZE_NARROW);
             }
             catch (Exception ex)
             {
-                //var task = currentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                //{
-                //    await UIHelper.ShowMessageDialog(ex.Message, "Failed to init MainPage");
-                //});
-                Debug.WriteLine("[ex] Failed to init MainPage: " + ex.Message);
-            }
-        }
-
-        private async void OnAppCloseRequested(object sender, 
-            Windows.UI.Core.Preview.SystemNavigationCloseRequestedPreviewEventArgs e)
-        {
-            if( Collection != null)
-            {
-                e.Handled = true;
-                if (UserPrefs.IsSyncOnClose)
+                var task = currentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
-                    if(!(contentFrame.Content is DeckSelectPage))
-                    {
-                        await NavigateToDeckSelectPage();
-                    }
-                    await StartSync();                    
-                }
-                App.Current.Exit();
+                    await UIHelper.ShowMessageDialog(ex.Message, "Failed to init MainPage");
+                });
             }
         }
-
-        private static void SetPreferLaunchSize()
+        
+        private static void SetPreferLauchSize()
         {
             ApplicationView.PreferredLaunchViewSize = new Size { Height = 600, Width = 500 };
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.Auto;
@@ -691,7 +676,7 @@ namespace AnkiU
                 await RetrieveUserPreference();
                 if (UserPrefs.IsFirstTimeOpenApp)
                 {
-                    SetupStatusAndTitle();
+                    ChangeStatusAndTitleToBlue();
                     commandBar.ClosedDisplayMode = AppBarClosedDisplayMode.Hidden;
                     contentFrame.Navigate(typeof(FirstSetupPage), this);
                 }
@@ -717,7 +702,7 @@ namespace AnkiU
             catch (Exception ex)
             {
                 //await UIHelper.ShowMessageDialog(ex.Message, "Failed to init MainPage navigation");
-                Debug.WriteLine("[!] Failed to init MainPage navigation: " + ex.Message);
+                Debug.WriteLine("[ex] Failed to init MainPage navigation. Ex: "+ ex.Message);
             }
         }
 
@@ -825,6 +810,17 @@ namespace AnkiU
             });
         }        
 
+        private void SetupVisualEffects()
+        {
+            if (!IS_VISUAL_EFFECT_ENABLE || !UIHelper.IsDeskTop())
+                return;
+            
+            splitViewPaneBackgroundColor.Opacity = DEFAULT_OPACITY;
+            canvas = new CanvasControl();
+            canvasDevice = new CanvasDevice();
+            splitViewBackgroundImage.Visibility = Visibility.Visible;
+        }
+
         private static void SetMinWindowSupported()
         {
             Windows.UI.ViewManagement.ApplicationView.GetForCurrentView().SetPreferredMinSize
@@ -889,8 +885,8 @@ namespace AnkiU
                 }
             }
             catch
-            {
-                //No database yet or something prevent us to access database -> backup at another time
+            {//No database yet or something prevent us to access database -> backup at another time
+
             }
         }
 
@@ -902,7 +898,7 @@ namespace AnkiU
         private static async Task<StorageFile> CopyMediaDBFileToBackup(StorageFolder backup)
         {
             StorageFile copyMediaDBFile = null;
-            var mediaDBFile = await Storage.AppLocalFolder.TryGetItemAsync(Constant.MEDIA_DB_NAME_ANKI_U) as StorageFile;
+            var mediaDBFile = await Storage.AppLocalFolder.TryGetItemAsync(Constant.MEDIA_DB_NAME) as StorageFile;
             if (mediaDBFile != null)
                 copyMediaDBFile = await mediaDBFile.CopyAsync(backup, mediaDBFile.Name, NameCollisionOption.ReplaceExisting);
             return copyMediaDBFile;
@@ -1098,116 +1094,24 @@ namespace AnkiU
             return 1;
         }
 
-        private void SplitPaneToggleClickHandler(object sender, RoutedEventArgs e)
-        {            
-           splitView.IsPaneOpen = !splitView.IsPaneOpen;
-        }
-
-        private async void SendFeedBackClick(object sender, RoutedEventArgs e)
+        private async void SplitPaneToggleClickHandler(object sender, RoutedEventArgs e)
         {
-            string message = "For bugs: Please describe the steps needed to reproduce them.\n"
-                            + "For feature requests: Please mention briefly why you need them.\n"
-                            + "We'll reply to your email in one business day.\n";
-            await UIHelper.LaunchEmailApp("ankiuniversal@gmail.com", message);
-        }
-
-        private void InsertMediaFilesClickHandler(object sender, RoutedEventArgs e)
-        {
-            InsertMediaFlyout flyout = new InsertMediaFlyout(Collection);
-            if (this.WindowSizeStates.CurrentState.Name == "wide")
-            {
-                flyout.ShowFlyout((sender as FrameworkElement), FlyoutPlacementMode.Left);
-            }
-            else
-            {
-                splitView.IsPaneOpen = false;
-                flyout.ShowFlyout(commandBar, FlyoutPlacementMode.Bottom);
-            }
-
-        }
-
-        private async void CheckMediaClickHandler(object sender, RoutedEventArgs e)
-        {
-            bool isContinue = await UIHelper.AskUserConfirmation("This may take a long time if you have many media files (>2000). Continue?",
-                                                                  "Check Media");
-            if (!isContinue)
-                return;
-
-            progressDialog = new ProgressDialog();
-            progressDialog.ProgressBarLabel = "This may take a little long...";
-            progressDialog.ShowInDeterminateStateNoStopAsync("Checking media folders");
-            var task = Task.Run(async () =>
-            {
-                var results = await Collection.Media.CheckMissingAndUnusedFiles();
-                await CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    progressDialog.Hide();
-
-                    if (results.MisingFiles.Count == 0 && results.UnusedFiles.Count == 0)
-                    {
-                        await UIHelper.ShowMessageDialog("No unused or missing media founds");
-                        return;
-                    }
-
-                    await ShowResultsToUser(results);
-                });
-            });
-        }
-
-        private void BackupMediaFolders(object sender, RoutedEventArgs e)
-        {
-            MediaBackupFlyout mediaBackupFlyout = new MediaBackupFlyout(Collection);
-
-            if (this.WindowSizeStates.CurrentState.Name == "wide")
-            {
-                mediaBackupFlyout.ShowFlyout((sender as FrameworkElement), FlyoutPlacementMode.Left);
-            }
-            else
-            {
-                splitView.IsPaneOpen = false;
-                mediaBackupFlyout.ShowFlyout(commandBar, FlyoutPlacementMode.Bottom);
-            }
-        }
-
-        private void HelpButtonClick(object sender, RoutedEventArgs e)
-        {
-            InitAllHelpsIfNeeded();
-
-            if (WindowSizeState == WindowSizeState.narrow)
-            {
-                splitView.IsPaneOpen = false;
-                if (helpSplitViewTransform.TranslateX != 0)
-                    helpSplitViewTransform.TranslateX = 0;
-            }
-            else
-            {
-                if (helpSplitViewTransform.TranslateX == 0)
-                    helpSplitViewTransform.TranslateX = splitView.OpenPaneLength;
-            }
-
-            allHelps.Foreground = commandBar.Foreground;
-            helpSplitView.IsHitTestVisible = true;
-            helpSplitView.IsPaneOpen = true;
-        }
-
-
-        private async void DownloadDeckButtonClick(object sender, RoutedEventArgs e)
-        {
-            Uri uri = new Uri("https://ankiweb.net/shared/decks/");
-            await Windows.System.Launcher.LaunchUriAsync(uri);
+            if(!splitView.IsPaneOpen)            
+                await CreateBlurBackgrounEffect();
+            
+            splitView.IsPaneOpen = !splitView.IsPaneOpen;
         }
 
         private async void SplitPanelImportButtonClickHandler(object sender, RoutedEventArgs e)
         {
-            await ImportPackage();
+           await ImportPackage();
         }
-
         private async Task ImportPackage()
         {
             var fileToImport = await UIHelper.OpenFilePicker("ImportFolderToken", ".apkg");
             if (fileToImport == null)
                 return;
-
+            
             IsCanNavigateBack = false;
             progressDialog = new ProgressDialog();
             progressDialog.ProgressBarLabel = "This may take a little long if package is large...";
@@ -1226,7 +1130,6 @@ namespace AnkiU
             });
         }
 
-       
         private async void ImporterPackageImportStateChangeEventHandler(string message)
         {
             await CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -1235,58 +1138,6 @@ namespace AnkiU
             });
         }
 
-        private void ExportAllButtonClick(object sender, RoutedEventArgs e)
-        {
-            ShowExportFlyout(sender as FrameworkElement);
-        }
-
-        private void ShowExportFlyout(FrameworkElement element)
-        {
-            if (this.WindowSizeStates.CurrentState.Name == "wide")
-            {
-                exportFlyout.Placement = FlyoutPlacementMode.Left;
-                exportFlyout.ShowAt(element);
-            }
-            else
-            {
-                splitView.IsPaneOpen = false;
-                exportFlyout.Placement = FlyoutPlacementMode.Bottom;
-                exportFlyout.ShowAt(commandBar);
-            }
-        }
-
-        private void StatsButtonClick(object sender, RoutedEventArgs e)
-        {
-            RootSplitView.IsPaneOpen = false;
-            Stats.IsWholeCollection = true;
-            contentFrame.Navigate(typeof(StatsPage), this);
-        }
-
-        private void OptimizeButtonClickHandler(object sender, RoutedEventArgs e)
-        {
-            progressDialog = new ProgressDialog();
-            progressDialog.ProgressBarLabel = "Check and rebuild database";
-            progressDialog.ShowInDeterminateStateNoStopAsync("Optimizing collection");
-
-            var task = Task.Run(async () =>
-            {
-                Collection.DeleteGraveLog();
-                Collection.Optimize();
-                await CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    progressDialog.Hide();
-                    await UIHelper.ShowMessageDialog("Data is optimized");
-                });
-            });
-        }
-
-        private void ManageNotetypeClickHandler(object sender, RoutedEventArgs e)
-        {
-            splitView.IsPaneOpen = false;
-            contentFrame.Navigate(typeof(ModelEditor), this);
-        }
-
-        
         private async Task<bool> ImporterDuplicateDeckEventHandler(string name)
         {
             string message = String.Format("The imported package has a deck named \"{0}\".\n" +
@@ -1399,7 +1250,6 @@ namespace AnkiU
         {
             RepositionCommanBar(e.OldState.Name);
         }
-
         private void RepositionCommanBar(string oldStateName)
         {
             int lastPrimary;
@@ -1936,11 +1786,24 @@ namespace AnkiU
             element.SetBinding(ForegroundProperty, b);
         }
 
-        private void ShowExportFlyout()
+        private void ExportAllButtonClick(object sender, RoutedEventArgs e)
         {
-            //splitView.IsPaneOpen = false;
-            exportFlyout.Placement = FlyoutPlacementMode.Bottom;
-            exportFlyout.ShowAt(commandBar);
+            ShowExportFlyout(sender as FrameworkElement);
+        }
+
+        private void ShowExportFlyout(FrameworkElement element)
+        {
+            if (this.WindowSizeStates.CurrentState.Name == "wide")
+            {
+                exportFlyout.Placement = FlyoutPlacementMode.Left;
+                exportFlyout.ShowAt(element);
+            }
+            else
+            {
+                splitView.IsPaneOpen = false;
+                exportFlyout.Placement = FlyoutPlacementMode.Bottom;
+                exportFlyout.ShowAt(commandBar);
+            }
         }
 
         private async void ExportFolderPickerButtonClickHandler(object sender, RoutedEventArgs e)
@@ -1962,7 +1825,7 @@ namespace AnkiU
                     FutureAccessList.AddOrReplace("ExportFolderToken", exportFolder);
                     exportFlyoutTextBox.Text = exportFolder.Path;
                 }
-                ShowExportFlyout();
+                ShowExportFlyout(exportAllButton);
             }
             catch
             {
@@ -2025,7 +1888,7 @@ namespace AnkiU
                 if (message == "Successed")
                     dialog = new MessageDialog("Your deck has been exported successfully.", "Successed!");
                 else
-                    dialog = new MessageDialog(UIConst.EXPORT_FAILED + "\n" + message, "Error!");
+                    dialog = new MessageDialog(UIConst.EXPORT_FAILED, "Error!");
 
                 await Collection.ReOpen();
                 IsCanNavigateBack = true;
@@ -2038,6 +1901,8 @@ namespace AnkiU
             UserPrefs.IsReadNightMode = !UserPrefs.IsReadNightMode;
             ChangeReadModeButtonTextAndSymbol();
             ChangeStatusAndCommanBarColorMode();
+            if (allHelps != null)
+                allHelps.ChangeReadMode(UserPrefs.IsReadNightMode);
             ToggleReadMode();            
         }
 
@@ -2055,17 +1920,18 @@ namespace AnkiU
                     read.ToggleReadMode();
         }
 
-        private void SetupStatusAndTitle()
+        private void ChangeStatusAndTitleToBlue()
         {
             var defaultBrush = Application.Current.Resources["ButtonBackGroundNormal"] as SolidColorBrush;
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
             {
-                CoreApplication.GetCurrentView().TitleBar.ExtendViewIntoTitleBar = false;                
-                var titleBar = ApplicationView.GetForCurrentView().TitleBar;                
+                var titleBar = ApplicationView.GetForCurrentView().TitleBar;
                 if (titleBar != null)
                 {
-                    titleBar.ButtonBackgroundColor = Colors.Transparent;
-                    titleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
+                    titleBar.BackgroundColor = defaultBrush.Color;
+                    titleBar.ForegroundColor = Colors.White;
+                    titleBar.ButtonBackgroundColor = defaultBrush.Color;
+                    titleBar.ButtonForegroundColor = Colors.White;
                 }
             }
 
@@ -2084,34 +1950,30 @@ namespace AnkiU
         {
             if (UserPrefs.IsReadNightMode)
             {
-                ChangeTitleBarToNightMode();
+                ChangeTitleBarToNightMode();                
                 ChangeStatusBarToNightMode();
-                //commandBarBindBackground.Background = UIHelper.CommandBarAcrylicDarkBrush;
-                //commandBar.Background = UIHelper.DarkerBrush;
-                //commandBar.Foreground = UIHelper.ForeGroundLight;
-                RootSplitView.Foreground = UIHelper.ForeGroundLight;
+                commandBar.Background = UIHelper.DarkerBrush;
+                commandBar.Foreground = UIHelper.ForeGroundLight;
             }
             else
             {
                 ChangeTitleBarToDayMode();
                 ChangeStatusBarToDayMode();
-                //commandBarBindBackground.Background = UIHelper.CommandBarAcrylicLightBrush;
-                //commandBar.Background = new SolidColorBrush(Colors.LightGray);
-                //commandBar.Foreground = new SolidColorBrush(Colors.Black);
-                RootSplitView.Foreground = new SolidColorBrush(Colors.Black);
+                commandBar.Background = UIHelper.BackgroundWhiteNormal;
+                commandBar.Foreground = new SolidColorBrush(Colors.Black);
             }
         }
 
         private void ChangeTitleBarToDayMode()
         {
             if (ApiInformation.IsTypePresent("Windows.UI.ViewManagement.ApplicationView"))
-            {                
+            {
                 var titleBar = ApplicationView.GetForCurrentView().TitleBar;
                 if (titleBar != null)
-                {                    
-                    titleBar.BackgroundColor = Colors.LightGray;
+                {
+                    titleBar.BackgroundColor = Colors.White;
                     titleBar.ForegroundColor = Colors.Black;
-                    titleBar.ButtonBackgroundColor = Colors.LightGray;
+                    titleBar.ButtonBackgroundColor = Colors.White;
                     titleBar.ButtonForegroundColor = Colors.Black;
                 }
             }
@@ -2124,10 +1986,10 @@ namespace AnkiU
                 var titleBar = ApplicationView.GetForCurrentView().TitleBar;
                 if (titleBar != null)
                 {
-                    titleBar.BackgroundColor = UIHelper.DarkerBrush.Color;
+                    titleBar.BackgroundColor = Colors.Black;
                     titleBar.ForegroundColor = Colors.White;
-                    titleBar.ButtonBackgroundColor = UIHelper.DarkerBrush.Color;
-                    titleBar.ButtonForegroundColor = Colors.White;                    
+                    titleBar.ButtonBackgroundColor = Colors.Black;
+                    titleBar.ButtonForegroundColor = Colors.White;
                 }
             }
         }
@@ -2245,12 +2107,164 @@ namespace AnkiU
                 saveButton.Opacity = 1;
             });
 
-        }       
+        }
+
+        private void StatsButtonClick(object sender, RoutedEventArgs e)
+        {
+            RootSplitView.IsPaneOpen = false;
+            Stats.IsWholeCollection = true;
+            contentFrame.Navigate(typeof(StatsPage), this);
+        }
+
+        private void OptimizeButtonClickHandler(object sender, RoutedEventArgs e)
+        {
+            progressDialog = new ProgressDialog();
+            progressDialog.ProgressBarLabel = "Check and rebuild database";
+            progressDialog.ShowInDeterminateStateNoStopAsync("Optimizing collection");
+
+            var task = Task.Run( async () =>
+            {                
+                Collection.DeleteGraveLog();
+                Collection.Optimize();
+                await CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    progressDialog.Hide();
+                    await UIHelper.ShowMessageDialog("Data is optimized");
+                });
+            });
+        }
+
+        private async void CheckMediaClickHandler(object sender, RoutedEventArgs e)
+        {
+            bool isContinue = await UIHelper.AskUserConfirmation("This may take a long time if you have many media files (>2000). Continue?",
+                                                                  "Check Media");
+            if (!isContinue)
+                return;
+
+            progressDialog = new ProgressDialog();
+            progressDialog.ProgressBarLabel = "This may take a little long...";
+            progressDialog.ShowInDeterminateStateNoStopAsync("Checking media folders");
+            var task = Task.Run( async () =>
+            {
+                var results = await Collection.Media.CheckMissingAndUnusedFiles();                
+                await CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    progressDialog.Hide();
+
+                    if (results.MisingFiles.Count == 0 && results.UnusedFiles.Count == 0)
+                    {
+                        await UIHelper.ShowMessageDialog("No unused or missing media founds");
+                        return;
+                    }
+
+                    await ShowResultsToUser(results);                   
+                });
+            });
+        }
+
+        private async Task ShowResultsToUser(Media.CheckResults results)
+        {
+            MediaCheckContentDialog dialog = new MediaCheckContentDialog();
+            StringBuilder missingMessage = new StringBuilder();
+            if (results.MisingFiles.Count == 0)
+                missingMessage.Append("0 file found.");
+            else
+                BuildMediaMapDeckList(results.MisingFiles, missingMessage);
+
+            StringBuilder unusedMessage = new StringBuilder();
+            if (results.UnusedFiles.Count == 0)
+            {
+                dialog.IsDeleteEnable = false;
+                unusedMessage.Append("0 file found.");
+            }
+            else
+            {
+                dialog.IsDeleteEnable = true;
+                BuildMediaMapDeckList(results.UnusedFiles, unusedMessage);
+            }
+            
+            dialog.UnusedText = unusedMessage.ToString();
+            dialog.MissingText = missingMessage.ToString();
+
+            await dialog.ShowAsync();
+            if (dialog.IsDelete)
+                await DeleteMediaFiles(results.UnusedFiles);
+        }
+
+        private async Task DeleteMediaFiles(List<KeyValuePair<string, long>> results)
+        {
+            progressDialog = new ProgressDialog();
+            progressDialog.ProgressBarLabel = "Deleting files...";
+            progressDialog.ShowInDeterminateStateNoStopAsync("Delete unused media");
+            await Collection.Media.DeleteMediaFiles(results);
+            progressDialog.Hide();
+            await UIHelper.ShowMessageDialog("Unused files have been deleted.");
+        }
+
+        private void BuildMediaMapDeckList(List<KeyValuePair<string, long>> results, StringBuilder message)
+        {
+            foreach (var r in results)
+            {
+                string deckName = Collection.Deck.GetDeckName(r.Value);
+                message.Append(r.Key);
+                message.Append(" in ");
+                message.Append(deckName);
+                message.Append(".\n\n");
+            }
+        }
+
+        private void SettingClickHandler(object sender, RoutedEventArgs e)
+        {
+            splitView.IsPaneOpen = false;
+            contentFrame.Navigate(typeof(SettingPage), this);
+        }
+
+        private async void DownloadDeckButtonClick(object sender, RoutedEventArgs e)
+        {
+            Uri uri = new Uri("https://ankiweb.net/shared/decks/");
+            await Windows.System.Launcher.LaunchUriAsync(uri);
+        }
+
+        private void BackupMediaFolders(object sender, RoutedEventArgs e)
+        {            
+            MediaBackupFlyout mediaBackupFlyout = new MediaBackupFlyout(Collection);            
+
+            if (this.WindowSizeStates.CurrentState.Name == "wide")
+            {
+                mediaBackupFlyout.ShowFlyout((sender as FrameworkElement), FlyoutPlacementMode.Left);
+            }
+            else
+            {
+                splitView.IsPaneOpen = false;
+                mediaBackupFlyout.ShowFlyout(commandBar, FlyoutPlacementMode.Bottom);
+            }
+        }
        
         private void ReloadDeckPage()
         {
             contentFrame.Navigate(typeof(DeckSelectPage), this);
             contentFrame.BackStack.RemoveAt(0);
+        }
+
+        private void InsertMediaFilesClickHandler(object sender, RoutedEventArgs e)
+        {            
+            InsertMediaFlyout flyout = new InsertMediaFlyout(Collection);
+            if (this.WindowSizeStates.CurrentState.Name == "wide")
+            {                
+                flyout.ShowFlyout((sender as FrameworkElement), FlyoutPlacementMode.Left);
+            }
+            else
+            {
+                splitView.IsPaneOpen = false;
+                flyout.ShowFlyout(commandBar, FlyoutPlacementMode.Bottom);
+            }
+
+        }
+
+        private void ManageNotetypeClickHandler(object sender, RoutedEventArgs e)
+        {
+            splitView.IsPaneOpen = false;
+            contentFrame.Navigate(typeof(ModelEditor), this);
         }
 
         public static async Task<bool> WarnFullSyncIfNeeded()
@@ -2262,6 +2276,86 @@ namespace AnkiU
             if(isContinue)
                 UserPrefs.IsFullSyncRequire = true;
             return isContinue;
+        }
+
+        private async Task CreateBlurBackgrounEffect()
+        {
+            if (canvas == null)
+                return;
+
+            var content = contentFrame.Content as Page;
+            using (var stream = await content.RenderToRandomAccessStream())
+            {                
+                var bitmap = await CanvasBitmap.LoadAsync(canvasDevice, stream);
+
+                var renderer = new CanvasRenderTarget(canvasDevice,
+                                                      bitmap.SizeInPixels.Width,
+                                                      bitmap.SizeInPixels.Height, bitmap.Dpi);
+
+                using (var ds = renderer.CreateDrawingSession())
+                {
+                    var blur = new GaussianBlurEffect();
+                    blur.BlurAmount = BLUR_AMOUNT;
+                    blur.Source = bitmap;
+                    ds.DrawImage(blur);
+                }
+
+                stream.Seek(0);
+                await renderer.SaveAsync(stream, CanvasBitmapFileFormat.Png);
+
+                BitmapImage image = new BitmapImage();
+                image.SetSource(stream);
+                splitViewBackgroundImage.Source = image;                       
+            }
+        }
+
+        private void MakeSureNoMemoryLeakInWin2D()
+        {
+            this.canvas.RemoveFromVisualTree();
+            this.canvas = null;
+        }
+
+        /// <summary>
+        /// We alway use mainpage so this will never reach. But it is still added to avoid
+        /// problem if we change navigation mode in future.
+        /// </summary>
+        /// <param name="e"></param>
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            MakeSureNoMemoryLeakInWin2D();            
+            base.OnNavigatedFrom(e);
+        }
+
+        private void HelpButtonClick(object sender, RoutedEventArgs e)
+        {
+            InitAllHelpsIfNeeded();
+            
+            if (WindowSizeState == WindowSizeState.narrow)
+            {
+                splitView.IsPaneOpen = false;
+                if (helpSplitViewTransform.TranslateX != 0)                                    
+                    helpSplitViewTransform.TranslateX = 0;                
+            }
+            else
+            {
+                if (helpSplitViewTransform.TranslateX == 0)                
+                    helpSplitViewTransform.TranslateX = splitView.OpenPaneLength;                                    
+            }    
+
+            allHelps.Foreground = commandBar.Foreground;
+            helpSplitView.IsHitTestVisible = true;
+            helpSplitView.IsPaneOpen = true;
+        }
+
+        public void InitAllHelpsIfNeeded()
+        {
+            if (allHelps == null)
+            {
+                allHelps = new AllHelps(ContentFrame, this, helpSplitView);
+                allHelps.Background = new SolidColorBrush(Windows.UI.Colors.Transparent);
+                allHelps.ChangeReadMode(UserPrefs.IsReadNightMode);
+                UIHelper.AddToGridInFull(allHelpsRootGrid, allHelps);               
+            }            
         }
 
         private void HelpSplitViewPaneClosedHandler(SplitView sender, object args)
@@ -2287,17 +2381,21 @@ namespace AnkiU
             {                
                 var ankiWebSync = new AnkiWebSync(this);
                 await ankiWebSync.StartSync();
-                if (MainPage.UserPrefs.IsNotShowMediaNoticeAnkiWebSync == false)
-                    await UIHelper.ShowMessageDialog("Please note that Anki Universal does not support syncing media,"
-                                                    + " so your sound/image files have not been sent to AnkiWeb.\n"
-                                                    + "To disable this message please go to \"Settings/Sync\"");
             }         
         }
 
         public void DeckImageChangedEventFire(StorageFile fileToChange, long deckId, long modifiedTime)
         {
             DeckImageChangedEvent(fileToChange, deckId, modifiedTime);
-        }      
+        }
+
+        private async void SendFeedBackClick(object sender, RoutedEventArgs e)
+        {
+            string message = "For bugs: Please describe the steps needed to reproduce them.\n"
+                            + "For feature requests: Please mention briefly why you need them.\n"
+                            + "We'll reply to your email in one business day.\n";
+            await UIHelper.LaunchEmailApp("ankiuniversal@gmail.com", message);
+        }
 
         private void OnDragAndHoldButtonClick(object sender, RoutedEventArgs e)
         {
@@ -2449,276 +2547,6 @@ namespace AnkiU
                 return true;
 
             throw new Exception("Faild to notify full sync.");         
-        }
-
-        private void OnNavigationViewItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
-        {
-            if (args.IsSettingsInvoked)
-            {
-                OnSettingClick();
-            }
-            else
-            {
-                switch (args.InvokedItem)
-                {
-                    case "Download Decks":
-                        OnDownloadDeckButtonClick();
-                        break;
-
-                    case "Import Decks":
-                        OnImportButtonClick();
-                        break;
-
-                    case "Export Decks":
-                        OnExportAllButtonClick();
-                        break;
-
-                    case "Collection Statistics":
-                        OnStatsButtonClick();
-                        break;
-
-                    case "Check Collection":
-                        OnCheckButtonClick();
-                        break;
-
-                    case "Manage Note Types":
-                        OnManageNotetypeClickHandler();
-                        break;
-
-                    case "Manage Tags":
-                        OnManageTagsClickHandler();
-                        break;
-
-                    case "Back up Media Files":
-                        OnBackupMediaClick();
-                        break;
-
-                    case "Check Media Files":
-                        OnCheckMediaClick();
-                        break;
-
-                    case "Insert Media Files":
-                        OnInsertMediaFilesClick();
-                        break;
-
-                    case "Help":
-                        HelpButtonClick();
-                        break;
-
-                    case "Feedback":
-                        OnSupportClick();
-                        break;
-                }
-            }
-        }
-
-        private void OnSettingClick()
-        {
-            //Make sure we don't navigate to SettingPage twice
-            if (contentFrame.Content is SettingPage)
-                return;
-
-            //splitView.IsPaneOpen = false;
-            contentFrame.Navigate(typeof(SettingPage), this);            
-        }
-
-        private void SettingClickHandler(object sender, RoutedEventArgs e)
-        {
-            splitView.IsPaneOpen = false;
-            contentFrame.Navigate(typeof(SettingPage), this);
-        }
-
-        private async void OnDownloadDeckButtonClick()
-        {
-            Uri uri = new Uri("https://ankiweb.net/shared/decks/");
-            await Windows.System.Launcher.LaunchUriAsync(uri);
-        }
-
-        private async void OnImportButtonClick()
-        {
-            await ImportPackage();
-        }
-
-        private void OnExportAllButtonClick()
-        {
-            ShowExportFlyout();
-        }
-
-        private void OnStatsButtonClick()
-        {
-            //RootSplitView.IsPaneOpen = false;
-            Stats.IsWholeCollection = true;
-            contentFrame.Navigate(typeof(StatsPage), this);
-        }
-
-        private void OnCheckButtonClick()
-        {
-            progressDialog = new ProgressDialog();
-            progressDialog.ProgressBarLabel = "Check and rebuild database";
-            progressDialog.ShowInDeterminateStateNoStopAsync("Optimizing collection");
-            
-            var task = Task.Run(async () =>
-            {
-                string message;
-                Collection.DeleteGraveLog();
-                if (!Collection.BasicCheck())
-                {
-                    await Collection.FixIntegrity();
-                    message = "Collection is fixed!";
-                }
-                else
-                {
-                    Collection.Optimize();
-                    message = "Data is optimized!";
-                }
-                await CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    progressDialog.Hide();
-                    await UIHelper.ShowMessageDialog(message);
-                });
-            });
-        }
-
-        private void OnManageNotetypeClickHandler()
-        {
-            //splitView.IsPaneOpen = false;
-            contentFrame.Navigate(typeof(ModelEditor), this);
-        }
-
-        private void OnManageTagsClickHandler()
-        {
-            //splitView.IsPaneOpen = false;
-            contentFrame.Navigate(typeof(TagManager), this);
-        }
-
-        private void OnBackupMediaClick()
-        {
-            MediaBackupFlyout mediaBackupFlyout = new MediaBackupFlyout(Collection);
-
-            //splitView.IsPaneOpen = false;
-            mediaBackupFlyout.ShowFlyout(commandBar, FlyoutPlacementMode.Bottom);
-        }
-
-        private async void OnCheckMediaClick()
-        {
-            bool isContinue = await UIHelper.AskUserConfirmation("This may take a long time if you have many media files (>2000). Continue?",
-                                                                  "Check Media");
-            if (!isContinue)
-                return;
-
-            progressDialog = new ProgressDialog();
-            progressDialog.ProgressBarLabel = "This may take a little long...";
-            progressDialog.ShowInDeterminateStateNoStopAsync("Checking media folders");
-            var task = Task.Run(async () =>
-            {
-                var results = await Collection.Media.CheckMissingAndUnusedFiles();
-                await CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-                {
-                    progressDialog.Hide();
-
-                    if (results.MisingFiles.Count == 0 && results.UnusedFiles.Count == 0)
-                    {
-                        await UIHelper.ShowMessageDialog("No unused or missing media founds");
-                        return;
-                    }
-
-                    await ShowResultsToUser(results);
-                });
-            });
-        }
-        private async Task ShowResultsToUser(Media.CheckResults results)
-        {
-            MediaCheckContentDialog dialog = new MediaCheckContentDialog();
-            StringBuilder missingMessage = new StringBuilder();
-            if (results.MisingFiles.Count == 0)
-                missingMessage.Append("0 file found.");
-            else
-                BuildMediaMapDeckList(results.MisingFiles, missingMessage);
-
-            StringBuilder unusedMessage = new StringBuilder();
-            if (results.UnusedFiles.Count == 0)
-            {
-                dialog.IsDeleteEnable = false;
-                unusedMessage.Append("0 file found.");
-            }
-            else
-            {
-                dialog.IsDeleteEnable = true;
-                BuildMediaMapDeckList(results.UnusedFiles, unusedMessage);
-            }
-
-            dialog.UnusedText = unusedMessage.ToString();
-            dialog.MissingText = missingMessage.ToString();
-
-            await dialog.ShowAsync();
-            if (dialog.IsDelete)
-                await DeleteMediaFiles(results.UnusedFiles);
-        }
-        private async Task DeleteMediaFiles(List<KeyValuePair<string, long>> results)
-        {
-            progressDialog = new ProgressDialog();
-            progressDialog.ProgressBarLabel = "Deleting files...";
-            progressDialog.ShowInDeterminateStateNoStopAsync("Delete unused media");
-            await Collection.Media.DeleteMediaFiles(results);
-            progressDialog.Hide();
-            await UIHelper.ShowMessageDialog("Unused files have been deleted.");
-        }
-        private void BuildMediaMapDeckList(List<KeyValuePair<string, long>> results, StringBuilder message)
-        {
-            foreach (var r in results)
-            {
-                string deckName = Collection.Deck.GetDeckName(r.Value);
-                message.Append(r.Key);
-                message.Append(" in ");
-                message.Append(deckName);
-                message.Append(".\n\n");
-            }
-        }
-
-        private void OnInsertMediaFilesClick()
-        {
-            InsertMediaFlyout flyout = new InsertMediaFlyout(Collection);
-
-            //splitView.IsPaneOpen = false;
-            flyout.ShowFlyout(commandBar, FlyoutPlacementMode.Bottom);
-        }
-
-        private void HelpButtonClick()
-        {
-            InitAllHelpsIfNeeded();
-
-            //splitView.IsPaneOpen = false;
-
-            allHelps.Foreground = commandBar.Foreground;
-            helpSplitView.IsHitTestVisible = true;
-            helpSplitView.IsPaneOpen = true;
-        }
-
-        public void InitAllHelpsIfNeeded()
-        {
-            if (allHelps == null)
-            {
-                allHelps = new AllHelps(ContentFrame, this, helpSplitView);
-                allHelps.Background = new SolidColorBrush(Windows.UI.Colors.Transparent);  
-                UIHelper.AddToGridInFull(allHelpsRootGrid, allHelps);
-            }
-        }
-
-        private async void OnSupportClick()
-        {
-            string message = "Anki Universal " + GetAppVersion() + "\n"
-                            + "For bugs: Please describe the steps needed to reproduce them.\n"
-                            + "For feature requests: Please mention briefly why you need them.\n"
-                            + "We'll reply to your email in one business day.\n";
-            await UIHelper.LaunchEmailApp("ankiuniversal@gmail.com", message);
-        }
-
-        public static string GetAppVersion()
-        {
-
-            var version = Windows.ApplicationModel.Package.Current.Id.Version;            
-            return string.Format("{0}.{1}.{2}.{3}", version.Major, version.Minor, version.Build, version.Revision);
-
         }
     }   
 

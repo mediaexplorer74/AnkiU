@@ -43,7 +43,6 @@ var tinymceInit = {
       'advlist autolink lists charmap hr autoresize colorpicker',
       'visualblocks textcolor code textpattern table paste'
     ],    
-    verify_html: false,
     menubar: false,
     setup: function (editor) {
 
@@ -363,11 +362,6 @@ function KeyPress(e) {
         }
 
         if (evtobj.keyCode == 83) {
-            NotifyButtonClick('save');
-            return false;
-        }
-
-        if (evtobj.keyCode == 13) {
             NotifyButtonClick('save');
             return false;
         }

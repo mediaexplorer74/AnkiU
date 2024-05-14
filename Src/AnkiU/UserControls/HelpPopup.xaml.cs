@@ -15,7 +15,6 @@ You should have received a copy of the GNU Affero General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-using AnkiU.UIUtilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -158,12 +157,12 @@ namespace AnkiU.UserControls
         {
             if (isNightMode)
             {
-                //userControl.Background = UIHelper.CommandBarAcrylicDarkBrush;
+                userControl.Background = new SolidColorBrush(Windows.UI.Colors.Black);
                 userControl.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
             }
             else
             {
-                //userControl.Background = UIHelper.CommandBarAcrylicLightBrush;
+                userControl.Background = new SolidColorBrush(Windows.UI.Colors.White);
                 userControl.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
             }
         }        

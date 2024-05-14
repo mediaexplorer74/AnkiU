@@ -42,6 +42,7 @@ namespace AnkiU.Views
     public sealed partial class AllHelps : UserControl
     {
         private Collection collection;
+        private bool isNightMode = false;
         private HelpPopup helpPopup;
         private CreditsPopup creditPopup;
 
@@ -131,9 +132,8 @@ namespace AnkiU.Views
         {            
             if (MainPage.UserPrefs.IsHelpAlreadyShown(HELP_DECK_NOTE))
             {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                Windows.System.Launcher.LaunchUriAsync(new Uri("https://nlpjapanesedictionary.wordpress.com/2018/05/30/anki-universal-get-started/"));
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                InitHelpPopupIfNeeded();
+                StartAddECkAndNotehelp();
             }
             else
             {
@@ -145,7 +145,7 @@ namespace AnkiU.Views
             }
         }
 
-        private void StartAddDeckAndNotehelp()
+        private void StartAddECkAndNotehelp()
         {
             helpPopup.Title = "Deck";
             helpPopup.SubtitleVisibility = Visibility.Collapsed;
@@ -156,7 +156,7 @@ namespace AnkiU.Views
 
         private void FirstAddDeckAndNoteNext()
         {
-            helpPopup.BackEvent = StartAddDeckAndNotehelp;
+            helpPopup.BackEvent = StartAddECkAndNotehelp;
             helpPopup.NextEvent = SecondAddDeckAndNoteNext;
 
             helpPopup.Title = "Deck";            
@@ -180,7 +180,7 @@ namespace AnkiU.Views
             helpPopup.NextEvent -= SecondAddDeckAndNoteNext;
 
             helpPopup.Title = "Note";
-            helpPopup.Text = "To resue an old note type for a new deck, please leave note type name blank. To change how your cards will display contents from notes, please view \"Note Types & Templates\". To extract sub-decks please view \"Custom Study\".";
+            helpPopup.Text = "To change how your cards will display contents from notes, please view \"Note Types & Templates\". To extract sub-decks please view \"Custom Study\".";
             helpPopup.ShowWithBackAndClose();
         }
         #endregion
@@ -225,11 +225,8 @@ namespace AnkiU.Views
         {            
             if (MainPage.UserPrefs.IsHelpAlreadyShown(HELP_NOTE_TYPE_AND_TEMPLATE))
             {
-                //InitHelpPopupIfNeeded();
-                //NoteTypeAndTemplateStart();
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-                Windows.System.Launcher.LaunchUriAsync(new Uri("https://nlpjapanesedictionary.wordpress.com/2018/05/30/anki-universal-card-appearance/"));
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+                InitHelpPopupIfNeeded();
+                NoteTypeAndTemplateStart();
             }
             else
             {
@@ -638,6 +635,7 @@ namespace AnkiU.Views
                 UIHelper.AddToGridInFull(MainPage.MainGrid, helpPopup);
                 helpPopup.CloseXVisibility = Visibility.Visible;      
             }
+            helpPopup.ChangeReadMode(isNightMode);
         }
 
         private bool MakeSureUsedModelWithExistingNote()
@@ -687,6 +685,21 @@ namespace AnkiU.Views
             return new BitmapImage(new Uri("ms-appx:///Assets/" + imageName));
         }
 
+        public void ChangeReadMode(bool isNightMode)
+        {
+            this.isNightMode = isNightMode;
+            if(isNightMode)           
+                userControl.Foreground = new SolidColorBrush(Windows.UI.Colors.White);            
+            else            
+                userControl.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);                         
+
+            if (helpPopup != null)            
+                helpPopup.ChangeReadMode(isNightMode);
+
+            if (creditPopup != null)
+                creditPopup.ChangeReadMode(isNightMode);
+        }
+
         private void HelpPopupCloseHandler()
         {
             try
@@ -707,14 +720,8 @@ namespace AnkiU.Views
                 creditPopup = new CreditsPopup(MainPage.MainGrid);
                 UIHelper.AddToGridInFull(MainPage.MainGrid, creditPopup);
             }
+            creditPopup.ChangeReadMode(isNightMode);
             creditPopup.Show();
-        }
-
-        private void OnTTSButtonClick(object sender, RoutedEventArgs e)
-        {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            Windows.System.Launcher.LaunchUriAsync(new Uri("https://nlpjapanesedictionary.wordpress.com/2018/06/05/anki-universal-tts/"));
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-        }
+        }        
     }
 }

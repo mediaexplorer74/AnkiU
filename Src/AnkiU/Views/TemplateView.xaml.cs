@@ -156,10 +156,9 @@ namespace AnkiU.Views
             await htmlEditor.PopulateAllEditableField(fields);
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
         private async Task HtmlEditorFieldPopulateFinishEventHandler()
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
+            await InsertAfterField(FRONT, "<br> <br> <hr>");
             InitCompleted?.Invoke();
         }
 

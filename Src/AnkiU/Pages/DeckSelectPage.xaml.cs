@@ -53,14 +53,14 @@ namespace AnkiU.Pages
         private App app;
 
         private IAnkiDecksView decksView;
-        private DeckListViewModel deckListViewModel;
+        private DeckListViewModel deckListViewModel;        
 
         private DeckConfigNameViewModel configNameViewModel;
 
-        private MenuFlyout deckMenuFlyout;
+        private MenuFlyout deckMenuFlyout;        
         private MenuFlyout dynamicDeckMenuFlyout;
         private MenuFlyout collectionMenuFlyout;
-        private Flyout currentShownFlyout;
+        private Flyout currentShownFlyout;        
         private NameEnterFlyout renameFlyout;
         private CustomStudyFlyout customStudyFlyout = null;
         private HelpPopup helpPopup = null;
@@ -68,7 +68,7 @@ namespace AnkiU.Pages
         private StorageFolder exportFolder = null;
 
         private DeckInformation deckShowContextMenu;
-        public DeckInformation DeckShowContextMenu { get { return deckShowContextMenu; } }
+        public DeckInformation DeckShowContextMenu { get { return deckShowContextMenu; } }                        
 
         private bool isPointerPressed;
         private bool isNightMode = false;
@@ -88,7 +88,7 @@ namespace AnkiU.Pages
         private long selectedConfigId;
         public long SelectedConfigId { get { return selectedConfigId; } }
 
-        public bool IsCreatingNewConfig { get; set; }
+        public bool IsCreatingNewConfig { get; set; }        
 
         public DeckSelectPage()
         {
@@ -113,14 +113,14 @@ namespace AnkiU.Pages
             collection = mainPage.Collection;
             GetDecksInformation();
             EnterTutorialModeIfNeeded();
-
+            
             HookAllEvents();
             ShowAllButtonOfThisPage();
 
             var task = deckListViewModel.UpdateAllSecondaryTilesIfHas();
-
+            
         }
-
+        
         private void HookAllEvents()
         {
             mainPage.EnableChangingReadMode(this);
@@ -133,7 +133,7 @@ namespace AnkiU.Pages
             mainPage.DragAndDropButton.Click += DragAndDropButtonClick;
             mainPage.CommanBar.Opening += OnCommanBarOpening;
             mainPage.DeckChanged += OnMainPageDeckChanged;
-            if (app != null)
+            if(app != null)
                 app.AppLaunchFromtTile += OnAppLaunchFromtTile;
         }
 
@@ -149,7 +149,7 @@ namespace AnkiU.Pages
         }
 
         private void HandleLiveTileInteraction(App app)
-        {
+        {            
             if (app != null && app.TileId != null)
             {
                 var deck = deckListViewModel.GetDeck((long)app.TileId);
@@ -166,8 +166,8 @@ namespace AnkiU.Pages
 
         private void OnCommanBarOpening(object sender, object e)
         {
-            if (customStudyFlyout != null && customStudyFlyout.IsOpen)
-                customStudyFlyout.Hide();
+            if(customStudyFlyout != null && customStudyFlyout.IsOpen)            
+                customStudyFlyout.Hide();            
         }
 
         private void DragAndDropButtonClick(object sender, RoutedEventArgs e)
@@ -207,14 +207,14 @@ namespace AnkiU.Pages
             {
                 deckListViewModel.DragAnDrop(parent, child, decksView);
             }
-            catch (DeckRenameException ex)
+            catch(DeckRenameException ex)
             {
                 if (ex.Error == DeckRenameException.ErrorCode.ALREADY_EXISTS)
                 {
                     await UIHelper.ShowMessageDialog("A deck with the same name already exists.");
                     return;
                 }
-                if (ex.Error == DeckRenameException.ErrorCode.FILTERED_NOSUBDEKCS)
+                if(ex.Error == DeckRenameException.ErrorCode.FILTERED_NOSUBDEKCS)
                 {
                     await UIHelper.ShowMessageDialog("A \"Custom Study Deck\" can't become a parent deck.");
                     return;
@@ -225,7 +225,7 @@ namespace AnkiU.Pages
                 await UIHelper.ShowMessageDialog("Unexpected error.");
                 return;
             }
-        }
+        }  
 
         private async void OnDeckImageChanged(StorageFile fileToChange, long deckId, long modifiedTime)
         {
@@ -246,7 +246,7 @@ namespace AnkiU.Pages
             newDeckFlyout.ShowFlyout(mainPage.AddButton, FlyoutPlacementMode.Bottom);
             newDeckFlyout.NewDeckCreatedEvent += NewDeckCreatedEventHandler;
             newDeckFlyout.ClosedWithoutCreatingDeckEvent += NewDeckFlyoutClosedWithoutCreatingDeckHandler;
-        }
+        }        
 
         private async void NewDeckCreatedEventHandler(long deckId)
         {
@@ -262,10 +262,10 @@ namespace AnkiU.Pages
         private void CurrentWindowVisibilityChangedHandler(object sender, VisibilityChangedEventArgs e)
         {
             if (!e.Visible)
-                SaveSession();
+                SaveSession();                
 
 
-            RefreshCardCountsIfNeeded();
+            RefreshCardCountsIfNeeded();            
         }
 
         private void RefreshCardCountsIfNeeded()
@@ -276,7 +276,7 @@ namespace AnkiU.Pages
             {
                 var isModified = collection.IsModified();
                 deckListViewModel.UpdateCardCountAllDecks();
-                lastRefreshDate = currentDate;
+                lastRefreshDate = currentDate;                
 
                 //Make sure we don't accidentally bump this up
                 if (!isModified)
@@ -290,12 +290,13 @@ namespace AnkiU.Pages
         }
 
         private void ShowAllButtonOfThisPage()
-        {
+        {            
             mainPage.DragAndDropButton.Visibility = Visibility.Visible;
-            //mainPage.RootSplitView.IsPaneToggleButtonVisible = true;
+            mainPage.RootSplitView.Pane.Visibility = Visibility.Visible;
             mainPage.HelpSplitView.Visibility = Visibility.Visible;
-            mainPage.AddButton.Visibility = Visibility.Visible;
-            mainPage.SyncButton.Visibility = Visibility.Visible;
+            mainPage.AddButton.Visibility = Visibility.Visible;            
+            mainPage.SplitViewToggleButton.Visibility = Visibility.Visible;
+            mainPage.SyncButton.Visibility = Visibility.Visible;                
 
             if (MainPage.UserPrefs.IsDeckListView)
                 SwitchToListView();
@@ -305,7 +306,7 @@ namespace AnkiU.Pages
 
         protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
         {
-            if (decksView.IsDragAndDropEnable)
+            if(decksView.IsDragAndDropEnable)
                 ReturnToDeckSelection();
 
             HideAllButtonOfThisPage();
@@ -317,9 +318,10 @@ namespace AnkiU.Pages
         private void HideAllButtonOfThisPage()
         {
             mainPage.DragAndDropButton.Visibility = Visibility.Collapsed;
-            //mainPage.RootSplitView.IsPaneToggleButtonVisible = false;
+            mainPage.RootSplitView.Pane.Visibility = Visibility.Collapsed;
             mainPage.HelpSplitView.Visibility = Visibility.Collapsed;
             mainPage.AddButton.Visibility = Visibility.Collapsed;
+            mainPage.SplitViewToggleButton.Visibility = Visibility.Collapsed;
             mainPage.SyncButton.Visibility = Visibility.Collapsed;
             if (MainPage.UserPrefs.IsDeckListView)
                 mainPage.GridViewButton.Visibility = Visibility.Collapsed;
@@ -364,16 +366,16 @@ namespace AnkiU.Pages
             if (deckGridView == null)
             {
                 this.FindName("deckGridView");
-                decksView = deckGridView as IAnkiDecksView;
+                decksView = deckGridView as IAnkiDecksView;                
                 HookDeckItemEvent();
-            }
+            }            
             decksView = deckGridView;
             decksView.DataContext = deckListViewModel.Decks;
             mainPage.ListViewButton.Visibility = Visibility.Visible;
             mainPage.GridViewButton.Visibility = Visibility.Collapsed;
 
             deckListViewModel.ShowAllDecks(decksView);
-            deckGridView.Visibility = Visibility.Visible;
+            deckGridView.Visibility = Visibility.Visible;            
         }
 
         private void SwitchToListView()
@@ -387,18 +389,16 @@ namespace AnkiU.Pages
             if (deckListView == null)
             {
                 this.FindName("deckListView");
-                decksView = deckListView as IAnkiDecksView;
+                decksView = deckListView as IAnkiDecksView;                            
                 HookDeckItemEvent();
-            }
+            }            
             decksView = deckListView;
             decksView.DataContext = deckListViewModel.Decks;
             mainPage.ListViewButton.Visibility = Visibility.Collapsed;
             mainPage.GridViewButton.Visibility = Visibility.Visible;
 
             deckListViewModel.ShowAllDecks(decksView);
-            deckListView.Visibility = Visibility.Visible;
-
-            FoldAllSubDecksOnListView();
+            deckListView.Visibility = Visibility.Visible;            
         }
 
         private void HookDeckItemEvent()
@@ -406,7 +406,6 @@ namespace AnkiU.Pages
             decksView.DeckItemClickEvent += DeckListViewItemClickEventHandler;
             decksView.DragAnDropEvent += OnDeckDragAnDrop;
             decksView.ExpandChildrenClickEvent += OnExpandChildrenClick;
-            decksView.ContextMenuClickEvent += OnDecksViewContextMenuClickEvent;
         }
 
         private void DeckListViewItemClickEventHandler(DeckInformation deck)
@@ -449,21 +448,20 @@ namespace AnkiU.Pages
         {
             customStudyFlyout = new CustomStudyFlyout(mainPage.CurrentDispatcher, mainGrid);
             customStudyFlyout.CustomStudyCreateEvent += CustomStudyCreateEventHandler;
-            UIHelper.AddToGridInFull(mainGrid, customStudyFlyout);
+            UIHelper.AddToGridInFull(mainGrid, customStudyFlyout);            
         }
 
-        private void CustomStudyCreateEventHandler(CustomStudyFlyout.CustomStudyOption studyOption, long originalDeckID, long dynamicDeckId)
+        private void CustomStudyCreateEventHandler(CustomStudyFlyout.CustomStudyOption studyOption, long deckId)
         {
             if (studyOption == CustomStudyFlyout.CustomStudyOption.IncreaseNewToDay ||
                 studyOption == CustomStudyFlyout.CustomStudyOption.IncreaseReviewToDay)
             {
-                deckListViewModel.UpdateCardCountForDeck(originalDeckID);
+                deckListViewModel.UpdateCardCountForDeck(deckId);
             }
             else
             {
-                deckListViewModel.UpdateCardCountForDeck(originalDeckID);
-                deckListViewModel.AddOrUpdateDeckCardCount(dynamicDeckId);
-                var deckInfor = deckListViewModel.GetDeck(dynamicDeckId);
+                deckListViewModel.AddOrUpdateDeckCardCount(deckId);
+                var deckInfor = deckListViewModel.GetDeck(deckId);
                 deckListViewModel.ResortNonSubdeck(deckInfor);
             }
         }
@@ -478,20 +476,6 @@ namespace AnkiU.Pages
         {
             deckListViewModel = new DeckListViewModel(mainPage.Collection);
             deckListViewModel.GetAllDeckInformation();
-            FoldAllSubDecksOnListView();
-        }
-
-        private void FoldAllSubDecksOnListView()
-        {
-            try
-            {
-                if (decksView is DeckListView)
-                    deckListViewModel.FoldAllChildrenDecks(decksView);
-            }
-            catch
-            {
-
-            }
         }
 
         private void PointerPressedHandler(object sender, PointerRoutedEventArgs e)
@@ -506,9 +490,9 @@ namespace AnkiU.Pages
                 var pointerPosition = e.GetPosition(mainGrid);
                 pointToShowFlyout.Margin = new Thickness(pointerPosition.X, pointerPosition.Y, 0, 0);
 
-                var deck = (e.OriginalSource as FrameworkElement).DataContext as DeckInformation;
-                ShowContextMenu(deck, null, e.GetPosition(null));
-
+                var deck = (e.OriginalSource as FrameworkElement).DataContext as DeckInformation;                
+                ShowContextMenu(deck, null, e.GetPosition(null));                
+                    
                 e.Handled = true;
             }
         }
@@ -520,7 +504,7 @@ namespace AnkiU.Pages
                 var pointerPosition = e.GetPosition(mainGrid);
                 pointToShowFlyout.Margin = new Thickness(pointerPosition.X, pointerPosition.Y, 0, 0);
 
-                var deck = (e.OriginalSource as FrameworkElement).DataContext as DeckInformation;
+                var deck = (e.OriginalSource as FrameworkElement).DataContext as DeckInformation;                
                 ShowContextMenu(deck, null, e.GetPosition(null));
                 e.Handled = true;
 
@@ -567,7 +551,7 @@ namespace AnkiU.Pages
 
         private void ShowCollectionContextMenu(UIElement target, Point offset)
         {
-            if (collectionMenuFlyout == null)
+            if(collectionMenuFlyout == null)
                 collectionMenuFlyout = Resources["CollectionContextMenu"] as MenuFlyout;
 
             collectionMenuFlyout.ShowAt(target, offset);
@@ -608,7 +592,7 @@ namespace AnkiU.Pages
                 if (String.IsNullOrWhiteSpace(baseName))
                     return;
 
-                if (baseName.Equals("Default", StringComparison.OrdinalIgnoreCase) && deckShowContextMenu.Id != Constant.DEFAULTDECK_ID)
+                if(baseName.Equals("Default", StringComparison.OrdinalIgnoreCase) && deckShowContextMenu.Id != Constant.DEFAULTDECK_ID)
                 {
                     await UIHelper.ShowMessageDialog("You can't name a non-default deck \"Default\"");
                     return;
@@ -624,7 +608,7 @@ namespace AnkiU.Pages
                 try
                 {
                     var newName = deckListViewModel.GetNewFullName(deckShowContextMenu, baseName);
-                    var deck = collection.Deck.Get(deckShowContextMenu.Id);
+                    var deck = collection.Deck.Get(deckShowContextMenu.Id);               
                     collection.Deck.Rename(deck, newName);
                     deckListViewModel.UpdateDeckName(deckShowContextMenu);
 
@@ -647,12 +631,12 @@ namespace AnkiU.Pages
                     }
                     else
                     {
-                        await UIHelper.ShowMessageDialog("You cannot rename this deck!");
+                        await UIHelper.ShowMessageDialog("You cannot rename this deck!"); 
                     }
                 }
                 catch
                 {
-                    await UIHelper.ShowMessageDialog("Unexpected error!");
+                    await UIHelper.ShowMessageDialog("Unexpected error!");                    
                 }
             });
         }
@@ -738,7 +722,7 @@ namespace AnkiU.Pages
             exporter.ExportFinishedEvent += ExporterExportFinishedEventHandler;
 
             var split = deckShowContextMenu.Name.Split(UIHelper.ILLEGAL_NAME_CHAR, StringSplitOptions.RemoveEmptyEntries);
-            var fileName = String.Join("_", split) + ".apkg";
+            var fileName = String.Join("_", split) + ".apkg";            
 
             Task task = Task.Run(async () =>
             {
@@ -757,10 +741,10 @@ namespace AnkiU.Pages
                 if (message == "Successed")
                     dialog = new MessageDialog("Your deck has been exported successfully.", "Successed!");
                 else
-                    dialog = new MessageDialog(UIConst.EXPORT_FAILED + "\n" + message, "Error!");
+                    dialog = new MessageDialog(UIConst.EXPORT_FAILED, "Error!");
 
                 mainPage.IsCanNavigateBack = true;
-                await dialog.ShowAsync();
+                await dialog.ShowAsync();                
             });
         }
 
@@ -769,16 +753,16 @@ namespace AnkiU.Pages
             selectedDeckId = deckShowContextMenu.Id;
             configNameViewModel = new DeckConfigNameViewModel(collection, selectedDeckId);
             deckAllConfigsView.DataContext = configNameViewModel.Configs;
-            if (MainPage.UserPrefs.IsHelpAlreadyShown(AllHelps.HELP_DECK_OPTION))
+            if (MainPage.UserPrefs.IsHelpAlreadyShown(AllHelps.HELP_DECK_OPTION))            
                 ShowFlyout(configureFlyout);
-            else
-                ShowDeckOpTionTutorial();
+            else            
+                ShowDeckOpTionTutorial();            
         }
 
         private void ShowDeckOpTionTutorial()
         {
             mainPage.AllHelps.HelpClose += AllHelpsClosedEventHandler;
-            mainPage.AllHelps.ShowDeckOptionHelp(null, null);
+            mainPage.AllHelps.ShowDeckOptionHelp(null, null);                        
         }
 
         private void AllHelpsClosedEventHandler()
@@ -810,7 +794,7 @@ namespace AnkiU.Pages
         {
             configNameViewModel.SetDeckConfigToSelected();
             configureFlyout.Hide();
-
+            
             //Need to update cardcount because user may have changed card limits
             deckListViewModel.UpdateCardCountForDeck(selectedDeckId);
             var children = collection.Deck.Children(selectedDeckId);
@@ -819,7 +803,7 @@ namespace AnkiU.Pages
             UpdateParentsCardCountIfNeeded(parent);
 
             collection.SaveAndCommitAsync();
-        }
+        }        
 
         private async void ConfigureFlyoutDeleteButtonClick(object sender, RoutedEventArgs e)
         {
@@ -829,7 +813,7 @@ namespace AnkiU.Pages
 
             string content = "Delete this preset will revert all decks using it to Default.\n" +
                              "Are you sure you want to continue?";
-            bool isDelete = await UIHelper.AskUserConfirmation(content);
+            bool isDelete = await ShowYesNoMessageDialog(content);
 
             if (isDelete)
             {
@@ -842,9 +826,9 @@ namespace AnkiU.Pages
         }
 
         private void ReorderCardsIfRandom(DeckConfigName config)
-        {
+        {            
             var newConf = collection.Deck.GetConf(config.Id).GetNamedObject("new");
-            var order = (int)JsonHelper.GetNameNumber(newConf, "order");
+            var order = (int)JsonHelper.GetNameNumber(newConf,"order");
             if (order == (int)NewCardInsertOrder.RANDOM)
             {
                 var deckIds = collection.Deck.DeckIdsForConf(config.Id);
@@ -856,7 +840,7 @@ namespace AnkiU.Pages
         private async void MenuFlyoutDeleteClickHandler(object sender, RoutedEventArgs e)
         {
             var deckId = deckShowContextMenu.Id;
-            if (deckId == Constant.DEFAULTDECK_ID)
+            if(deckId == Constant.DEFAULTDECK_ID)
             {
                 await UIHelper.ShowMessageDialog("Default deck cannot be deleted.");
                 return;
@@ -873,7 +857,7 @@ namespace AnkiU.Pages
                 childs = Collection.Deck.Children(deckId);
                 if (childs.Count > 0)
                 {
-                    content = $"WARNING: This deck has sub-decks, delete it will also permanently remove all its child decks.\n"
+                    content = $"WARNING: This deck has sub-decks, delete it will also permanently remove all its child decks.\n" 
                               + "Are you sure you want to continue?";
                 }
                 else
@@ -883,7 +867,7 @@ namespace AnkiU.Pages
                 }
             }
 
-            bool isDelete = await UIHelper.AskUserConfirmation(content);
+            bool isDelete = await ShowYesNoMessageDialog(content);
             if (isDelete)
             {
                 if (!collection.Deck.IsDyn(deckId))
@@ -908,28 +892,28 @@ namespace AnkiU.Pages
             dialog.ProgressBarLabel = "This may take a while...";
             dialog.ShowInDeterminateStateNoStopAsync("Deleting deck");
 
-            Task.Run(async () =>
-           {//Run these in async to avoid blocking UI
+            Task.Run( async () =>
+            {//Run these in async to avoid blocking UI
                 var parents = collection.Deck.Parents(deckId);
-               var originalDeckId = collection.Deck.TryGetOriginalDeckId(deckId);
+                var originalDeckId = collection.Deck.TryGetOriginalDeckId(deckId);
 
-               collection.Deck.Remove(deckId, true, true);
+                collection.Deck.Remove(deckId, true, true);
 
-               await mainPage.CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
-               {
-                   await RemoveMediaAndView(deckId);
+                await mainPage.CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                {
+                    await RemoveMediaAndView(deckId);
 
-                   await DeleteChildrenIfNeeded(childs);
-                   UpdateOriginalDeckCardCountIfNeeded(originalDeckId);
-                   UpdateParentsCardCountIfNeeded(parents);
+                    await DeleteChildrenIfNeeded(childs);
+                    UpdateOriginalDeckCardCountIfNeeded(originalDeckId);
+                    UpdateParentsCardCountIfNeeded(parents);
 
-                   dialog.Hide();
-                   collection.Save();
-                   collection.Database.Commit();
+                    dialog.Hide();
+                    collection.Save();
+                    collection.Database.Commit();
 
-                   MainPage.RemoveDeckPrefsIfNeeded(deckId);
-               });
-           });
+                    MainPage.RemoveDeckPrefsIfNeeded(deckId);
+                });
+            });
         }
 
         private void UpdateParentsCardCountIfNeeded(List<Windows.Data.Json.JsonObject> parents)
@@ -938,14 +922,14 @@ namespace AnkiU.Pages
             {
                 foreach (var deck in parents)
                 {
-                    long id = (long)JsonHelper.GetNameNumber(deck, "id");
+                    long id = (long)JsonHelper.GetNameNumber(deck,"id");
                     deckListViewModel.UpdateCardCountForDeck(id);
                 }
             }
         }
 
         public void UpdateOriginalDeckCardCountIfNeeded(long? originalId)
-        {
+        {            
             if (originalId == null)
                 return;
 
@@ -953,7 +937,7 @@ namespace AnkiU.Pages
 
             deckListViewModel.UpdateCardCountForDeck(deckId);
             var parents = collection.Deck.Parents(deckId);
-            UpdateParentsCardCountIfNeeded(parents);
+            UpdateParentsCardCountIfNeeded(parents);            
         }
 
         private async Task DeleteChildrenIfNeeded(Dictionary<string, long> childs)
@@ -976,6 +960,24 @@ namespace AnkiU.Pages
         {
             await collection.Media.RemoveDeckMediaFolderAsync(deckId);
             await deckListViewModel.RemoveDeck(deckId);
+        }
+
+        private static async Task<bool> ShowYesNoMessageDialog(string content)
+        {
+            var messageDialog = new MessageDialog(content);
+
+            bool isDelete = false;
+            messageDialog.Commands.Add(new UICommand("Yes", (command) =>
+            {
+                isDelete = true;
+            }));
+            messageDialog.Commands.Add(new UICommand("No", (command) =>
+            {
+                isDelete = false;
+            }));
+            messageDialog.DefaultCommandIndex = 1;
+            await messageDialog.ShowAsync();
+            return isDelete;
         }
 
         //NOTUSED
@@ -1026,7 +1028,7 @@ namespace AnkiU.Pages
             }
             else
             {
-                mainGrid.Background = new SolidColorBrush(Colors.White);
+                mainGrid.Background = new SolidColorBrush(Windows.UI.Colors.White);
             }
             if (helpPopup != null)
                 helpPopup.ChangeReadMode(isNightMode);
@@ -1042,14 +1044,12 @@ namespace AnkiU.Pages
         }
 
         private void SortByDateAddedClick(object sender, RoutedEventArgs e)
-        {            
-            deckListViewModel.UnFoldAllChildrenDecks(decksView);
+        {
             deckListViewModel.SortByDateAdded();
         }
 
         private void SortByNameClick(object sender, RoutedEventArgs e)
         {
-            deckListViewModel.UnFoldAllChildrenDecks(decksView);
             deckListViewModel.SortByName();
         }
 
@@ -1069,14 +1069,14 @@ namespace AnkiU.Pages
             {
                 DeckCreationTutorialSetup();
             }
-            else if (AllHelps.Tutorial == AllHelps.TutorialState.ViewCard)
+            else if(AllHelps.Tutorial == AllHelps.TutorialState.ViewCard)
             {
                 CardViewTutorialSetup();
             }
-            else if (AllHelps.Tutorial == AllHelps.TutorialState.SharedDeck)
+            else if(AllHelps.Tutorial == AllHelps.TutorialState.SharedDeck)
             {
                 SharedDeckTutorialSetup();
-            }
+            }  
         }
 
         private void DeckCreationTutorialSetup()
@@ -1088,8 +1088,7 @@ namespace AnkiU.Pages
             helpPopup.Title = "Create a Deck";
             helpPopup.SubTitle = "(A place to store your cards)";
             helpPopup.Text = "To create a deck please press on the \"Add\" icon."
-                             + " Choose any names you like and use \"Basic\" type." 
-                             + " Leave note type name blank if you want to reuse an old note type.";
+                             + " Choose any names you like and use \"Basic\" type.";
             helpPopup.SetOffSet(0, DEFAULT_HELP_POPUP_VERTICAL_OFFSET);
             helpPopup.Show();
             mainPage.NoticeMe.Begin();
@@ -1108,14 +1107,30 @@ namespace AnkiU.Pages
 
         private void SharedDeckTutorialSetup()
         {
+            mainPage.SplitViewToggleButton.Click += TutorialSplitViewToggleButtonClick;
             helpPopup = new HelpPopup();
             UIHelper.AddToGridInFull(mainGrid, helpPopup);
             helpPopup.Title = "Shared Decks";
-            helpPopup.SubtitleVisibility = Visibility.Collapsed;
+            helpPopup.SubTitle = "(Sharing is caring)";
             helpPopup.Text = "To download and import decks created by others, please press on the button at the top-left corner.\n"
                              + "(we are not responsible for these contents.)";
             helpPopup.SetOffSet(0, DEFAULT_HELP_POPUP_VERTICAL_OFFSET);
             mainPage.NoticeMe.Stop();
+            UIHelper.SetStoryBoardTarget(mainPage.BlinkingBlue, mainPage.SplitViewToggleButton.Name);
+            mainPage.NoticeMe.Begin();
+            helpPopup.Show();
+        }         
+
+        private void TutorialSplitViewToggleButtonClick(object sender, RoutedEventArgs e)
+        {
+            helpPopup.Hide();            
+            mainPage.SplitViewToggleButton.Click -= TutorialSplitViewToggleButtonClick;
+            mainPage.NoticeMe.Stop();
+            
+            helpPopup.Title = "Finished";
+            helpPopup.SubtitleVisibility = Visibility.Collapsed;
+            helpPopup.Text = "This concludes \"Add Decks & Notes\" tutorial. You can try out other note types to see how they work.\n"
+                             + "When you are ready (and in a good mood), please view \"Note Types & Templates\" tutorial.";
             helpPopup.ShowWithClose();
 
             AllHelps.Tutorial = AllHelps.TutorialState.NotShow;
@@ -1126,10 +1141,10 @@ namespace AnkiU.Pages
         {
             mainPage.AddButton.Click -= TutorialAddButtonClickHandler;
             NewDeckCreatedEvent -= TutorialNewDeckCreatedEvent;
-            AllHelps.Tutorial = AllHelps.TutorialState.AddNote;
+            AllHelps.Tutorial = AllHelps.TutorialState.AddNote;            
             helpPopup.Title = "Add a Note";
             helpPopup.SubTitle = "(Start adding contents to your cards.)";
-            helpPopup.Text = "To add a note please right-click (or touch & hold) on your deck then choose \"Add Notes\".";
+            helpPopup.Text = "To add a note please right-click (or touch & hold) on your deck then choose \"Add Notes\".";            
             helpPopup.ShowWithClose();
         }
 
@@ -1141,7 +1156,7 @@ namespace AnkiU.Pages
 
         private void NewDeckFlyoutClosedWithoutCreatingDeckHandler()
         {
-            if (helpPopup != null && AllHelps.Tutorial == AllHelps.TutorialState.DeckCreation)
+            if(helpPopup != null && AllHelps.Tutorial == AllHelps.TutorialState.DeckCreation)
             {
                 helpPopup.Show();
             }
@@ -1161,42 +1176,11 @@ namespace AnkiU.Pages
 
             var isSuccess = await tile.RequestCreateAsync();
             base.IsEnabled = true;
-            if (!isSuccess)
+            if (!isSuccess)                            
                 return;
-
-
+            
+            
             TilesHelper.SendSecondaryTileNotification(tileId, deckShowContextMenu.NewCards.ToString(), deckShowContextMenu.DueCards.ToString());
-        }
-
-        private void OnDecksViewContextMenuClickEvent(object sender, RoutedEventArgs e)
-        {            
-            FrameworkElement button = sender as FrameworkElement;
-            if (button == null)
-                return;
-            var deckInfor = button.DataContext as DeckInformation;
-            if (deckInfor == null)
-                return;
-
-            ShowContextMenu(deckInfor, button, new Point(0, 0));
-        }
-
-        private void OnCustomStudyMenuFlyoutItemClick(object sender, RoutedEventArgs e)
-        {
-            if (!collection.Deck.IsDyn(deckShowContextMenu.Id))
-            {
-                mainPage.Collection.Deck.Select(deckShowContextMenu.Id, false);
-                if (customStudyFlyout == null)
-                    InitCustomStudyFlyout();
-
-                customStudyFlyout.InitDeckValue(collection, isNightMode);
-                customStudyFlyout.Show();
-            }
-        }
-
-        private void OnMainGridTapped(object sender, TappedRoutedEventArgs e)
-        {
-            var pointerPosition = e.GetPosition(mainGrid);
-            pointToShowFlyout.Margin = new Thickness(pointerPosition.X, pointerPosition.Y, 0, 0);
         }
     }
 }

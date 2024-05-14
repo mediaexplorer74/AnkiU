@@ -288,20 +288,22 @@ namespace AnkiU.Pages
 
         private void ViewModeButtonClickHandler(object sender, RoutedEventArgs e)
         {
+            var button = sender as Button;
             isExpertMode = !isExpertMode;
-            Options.Clear();            
-
+            Options.Clear();
             if (isExpertMode)
             {                        
                 InitExpertOptionTabs();
                 rootTab.Visibility = Visibility.Visible;
-                simpleViewRootGrid.Visibility = Visibility.Collapsed;               
+                simpleViewRootGrid.Visibility = Visibility.Collapsed;
+                button.Content = "Simple Mode";                 
             }
             else
             {
                 InitSimpleOptionView();
                 rootTab.Visibility = Visibility.Collapsed;
                 simpleViewRootGrid.Visibility = Visibility.Visible;
+                button.Content = "Expert Mode";
             }
         }
 

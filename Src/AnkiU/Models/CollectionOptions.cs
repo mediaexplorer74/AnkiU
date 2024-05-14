@@ -143,19 +143,6 @@ namespace AnkiU.Models
             }
         }
 
-        private bool isBlackNightMode;
-        public bool IsBlackNightMode
-        {
-            get
-            {
-                return isBlackNightMode;
-            }
-            set
-            {
-                isBlackNightMode = value;
-            }
-        }
-
         public CollectionOptions()
         {
             IsShowDueCount = true;
@@ -164,7 +151,6 @@ namespace AnkiU.Models
             IsTTSAutoplay = false;
             CollapseTime = 20;
             IsEnableNotification = true;
-            isBlackNightMode = false;
             AnswerPosition = (int)AnswerButtonPosition.Bottom;
         }
 
@@ -188,8 +174,6 @@ namespace AnkiU.Models
             if (compared.IsEnableNotification != IsEnableNotification)
                 return false;
             if (compared.AnswerPosition != AnswerPosition)
-                return false;
-            if (compared.IsBlackNightMode != IsBlackNightMode)
                 return false;
 
             return true;

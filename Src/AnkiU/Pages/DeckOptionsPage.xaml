@@ -19,7 +19,7 @@
         <ScrollViewer ZoomMode="Disabled"  HorizontalScrollMode="Disabled" HorizontalAlignment="Stretch"
                       VerticalScrollBarVisibility="Auto" VerticalScrollMode="Auto" HorizontalScrollBarVisibility="Disabled" >
 
-            <Grid x:Name="rootGrid"  Background="{StaticResource ButtonBackGroundNormal}">
+            <Grid x:Name="rootGrid"  Background="{Binding Background, ElementName=userControl}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
@@ -27,7 +27,7 @@
 
                 <Grid x:Name="simpleViewRootGrid" Visibility="Visible" >
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="60"/>
+                        <RowDefinition Height="70"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
@@ -35,68 +35,33 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Margin="1,0,0,3" FontWeight="SemiBold" VerticalAlignment="Center" Foreground="White" 
-                                   HorizontalAlignment="Left" Text="NAME" FontSize="18" />
+                        <TextBlock Margin="1,0,0,3" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Left" Text="NAME" FontSize="18" />
                         <TextBox Margin="10,0,15,2" Grid.Column="1" VerticalAlignment="Center" 
                                  x:Name="currentNameSimpleView" IsSpellCheckEnabled="False"
-                                 BorderBrush="White"
-                                 Foreground="White"
+                                 Foreground="{Binding Foreground, ElementName=userControl}"
                                  HorizontalAlignment="Stretch" TextAlignment="Left" FontSize="18"                          
                                  Text="{x:Bind CurrentName, Mode=TwoWay}"/>
-                        <Button Grid.Column="2" Style="{StaticResource ButtonBlue}"                                
-                                Background="{StaticResource ButtonBackGroundAnalogousLeft}"
-                                BorderBrush="White" BorderThickness="0"
-                                VerticalAlignment="Center" HorizontalAlignment="Center" 
-                                Margin="5,0,0,0" Width="120" 
-                                Height="35"
-                                Padding="5"                                
-                                Click="ViewModeButtonClickHandler">
-                            <StackPanel Orientation="Horizontal">
-                                <SymbolIcon Symbol="View" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" />
-                                <TextBlock Text="To Expert" Margin="5,0,0,0"/>
-                            </StackPanel>
-                        </Button>
                     </Grid>
+                    <Border BorderBrush="{StaticResource ButtonBackGroundCompliment}" BorderThickness="0,0,0,1" />
 
-                    <Border Background="{Binding Background, ElementName=simpleConfigView}" Grid.Row="1" />
+                    <Border Background="{Binding Background, ElementName=simpleConfigView}" Grid.Row="1"/>
                     <views:DeckSImpleOptionsView HorizontalAlignment="Stretch" Background="White" 
                                                  Foreground="{Binding Foreground, ElementName=userControl}" 
                                                  x:Name="simpleConfigView" Grid.Row="1" Margin="10,10,15,10"/>
                 </Grid>
 
-                <Pivot x:Name="rootTab" Visibility="Collapsed"    
-                       Style="{StaticResource TabsStylePivotStyle}" 
-                       Grid.Row="0" 
-                       x:DeferLoadStrategy="Lazy">
-                    <Pivot.Title >
-                        <Grid MaxWidth="500" HorizontalAlignment="Left" MinWidth="310" >
+                <Pivot x:Name="rootTab" Visibility="Collapsed" Foreground="{Binding Foreground, ElementName=userControl}"  Background="{Binding Background, ElementName=userControl}"      
+                   Style="{StaticResource TabsStylePivotStyle}" Grid.Row="0" x:DeferLoadStrategy="Lazy">
+                    <Pivot.Title>
+                        <Grid MaxWidth="500" HorizontalAlignment="Left" MinWidth="310"  >
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock x:Name="tabTitle" Foreground="White" FontWeight="SemiBold" VerticalAlignment="Center" 
-                                       HorizontalAlignment="Left" Text="NAME" FontSize="18" />
-                            <TextBox x:Name="currentNameExpertView" Margin="10,0,15,0" Grid.Column="1" 
-                                     VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Left" 
-                                     FontSize="18"  Foreground="White"
-                                     BorderBrush="White"
+                            <TextBlock x:Name="tabTitle" Foreground="{Binding Foreground, ElementName=userControl}" FontWeight="SemiBold" VerticalAlignment="Center" HorizontalAlignment="Left" Text="NAME" FontSize="18" />
+                            <TextBox x:Name="currentNameExpertView" Margin="10,0,15,0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Left" FontSize="18"  Foreground="{Binding Foreground, ElementName=userControl}"  
                                 Text="{x:Bind CurrentName, Mode=TwoWay}" IsSpellCheckEnabled="False"/>
-                            <Button Grid.Column="2" Style="{StaticResource ButtonBlue}"
-                                Background="{StaticResource ButtonBackGroundAnalogousLeft}"
-                                BorderThickness="0"
-                                VerticalAlignment="Center" HorizontalAlignment="Center" 
-                                Height="35"
-                                Margin="5,0,0,0" Width="120" 
-                                Padding="5"                                
-                                Click="ViewModeButtonClickHandler">
-                                <StackPanel Orientation="Horizontal">
-                                    <SymbolIcon Symbol="View" HorizontalAlignment="Left" VerticalAlignment="Center" Foreground="White" />
-                                    <TextBlock Text="To Simple" Margin="5,0,0,0"/>
-                                </StackPanel>
-                            </Button>
                         </Grid>
                     </Pivot.Title>
                     <PivotItem x:Name="generalTab"  Background="{Binding Background, ElementName=simpleConfigView}" Padding="0" Margin="0" >
@@ -105,7 +70,7 @@
                             FontFamily="Segoe UI" 
                             FontSize="16"                            
                             FontWeight="SemiBold"
-                            Foreground="White"
+                            Foreground="{Binding Foreground, ElementName=userControl}"
                             Margin="5"                                                
                             Style="{StaticResource CaptionTextBlockStyle}"    
                             IsTextScaleFactorEnabled="False"
@@ -122,7 +87,7 @@
                             FontSize="16"
                             FontWeight="SemiBold"                            
                             Margin="5"
-                            Foreground="White" 
+                            Foreground="{Binding Foreground, ElementName=userControl}" 
                             Style="{StaticResource CaptionTextBlockStyle}"                            
                             IsTextScaleFactorEnabled="False"
                             TextAlignment="Center"
@@ -138,7 +103,7 @@
                             FontSize="16"
                             FontWeight="SemiBold"                            
                             Margin="5"
-                            Foreground="White"
+                            Foreground="{Binding Foreground, ElementName=userControl}"
                             Style="{StaticResource CaptionTextBlockStyle}"                            
                             IsTextScaleFactorEnabled="False"
                             TextAlignment="Center"
@@ -154,7 +119,7 @@
                             FontWeight="SemiBold"
                             FontSize="16"
                             Margin="5"                    
-                            Foreground="White" 
+                            Foreground="{Binding Foreground, ElementName=userControl}" 
                             Style="{StaticResource CaptionTextBlockStyle}"                            
                             IsTextScaleFactorEnabled="False"
                             TextAlignment="Center"
@@ -164,7 +129,8 @@
                     </PivotItem>
                 </Pivot>
 
-                <Border x:Name="otherContentBorder" Grid.Row="1" Background="White" BorderThickness="0" Margin="0,-5,0,0"/>
+                <Border x:Name="otherContentBorder" Grid.Row="1" Background="White" BorderBrush="{StaticResource ButtonBackGroundCompliment}" BorderThickness="0,1,0,0"/>
+                <Button Grid.Row="1" x:Name="viewModeButton" Style="{StaticResource ButtonBlue}"  VerticalAlignment="Top" HorizontalAlignment="Left" Margin="15,13,0,0" Content="Expert Mode" Width="120" Click="ViewModeButtonClickHandler" />
             </Grid>
         </ScrollViewer>
     </Grid>

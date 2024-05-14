@@ -49,9 +49,7 @@ namespace AnkiU.Views
         }
         
         public static readonly DependencyProperty TextForeGroundProperty =
-            DependencyProperty.Register("TextForeGround", typeof(SolidColorBrush), 
-                typeof(AnkiModeInformationView), 
-                new PropertyMetadata(new SolidColorBrush(Windows.UI.Colors.Black)));
+            DependencyProperty.Register("TextForeGround", typeof(SolidColorBrush), typeof(AnkiModeInformationView), new PropertyMetadata(new SolidColorBrush(Windows.UI.Colors.Black)));
 
 
         public AnkiModeInformationView()

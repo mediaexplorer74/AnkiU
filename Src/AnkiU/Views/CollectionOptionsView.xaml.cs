@@ -55,7 +55,6 @@ namespace AnkiU.Views
             ViewModel.Options.CollapseTime = temp.CollapseTime;
             ViewModel.Options.IsEnableNotification = temp.IsEnableNotification;
             ViewModel.Options.AnswerPosition = temp.AnswerPosition;
-            ViewModel.Options.IsBlackNightMode = temp.IsBlackNightMode;
         }
     }
 }

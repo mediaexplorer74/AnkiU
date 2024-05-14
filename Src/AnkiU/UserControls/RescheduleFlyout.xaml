@@ -10,9 +10,7 @@
     d:DesignWidth="400">
 
     <UserControl.Resources>
-        <Flyout x:Name="rescheduleFlyout" x:Key="RescheduleFlyoutTemplate" Placement="Bottom"
-                FlyoutPresenterStyle="{StaticResource DefaultFlyoutPresenterStyle}"
-                Closed="RescheduleFlyoutClosedHandler">
+        <Flyout x:Name="rescheduleFlyout" x:Key="RescheduleFlyoutTemplate" Placement="Bottom" Closed="RescheduleFlyoutClosedHandler">
             <ContentPresenter>
                 <StackPanel Width="300">
 

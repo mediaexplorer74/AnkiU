@@ -37,7 +37,6 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using System.IO.Compression;
-using Windows.Data.Json;
 
 namespace AnkiU.UserControls
 {
@@ -82,7 +81,7 @@ namespace AnkiU.UserControls
         {
             if(mediaZipFile == null)
             {
-                await UIHelper.ShowMessageDialog("Please choose a *.apkg package or a backed up zip file.");
+                await UIHelper.ShowMessageDialog("Please choose a backed up zip file.");
                 mediaInsertFlyout.ShowAt(placeToShow);
                 return;
             }
@@ -107,35 +106,25 @@ namespace AnkiU.UserControls
                     await UIHelper.ShowMessageDialog("No files found.");
                     mediaInsertFlyout.ShowAt(placeToShow);
                     return;
-                }
+                }                
 
                 var deckList = await collection.Media.MapDeckIdToDeckIdFolder();
                 var deckFolder = deckList[currentSelectedDeck.Id];
                 int index = 0;
-                var numToName = CheckIfAnkiPackage(archive, deckFolder);
 
                 try
                 {
                     collection.Media.Database.BeginTransaction();
-                    string entryName;
                     foreach (var entry in archive.Entries)
                     {
-                        entryName = entry.Name;
-                        if (numToName != null)
-                        {
-                            bool isSuccess = numToName.TryGetValue(entry.Name, out entryName);
-                            if (!isSuccess)
-                                continue;
-                        }
-
                         progressDialog.ProgressBarLabel = String.Format(PROGESS_LABEL, index, total);
                         index++;
 
-                        var existFile = await deckFolder.TryGetItemAsync(entryName) as StorageFile;
+                        var existFile = await deckFolder.TryGetItemAsync(entry.Name) as StorageFile;
                         if (existFile != null)
                         {
                             if (!isNotAksAgain)
-                                await AskUserConfirmationForReplacing(entryName);
+                                await AskUserConfirmationForReplacing(entry.Name);
 
                             if (isCancel)
                                 return;
@@ -143,100 +132,19 @@ namespace AnkiU.UserControls
                             if (!isReplace)
                                 continue;
                         }
-
-                        await ExtractMediaFile(deckFolder, entryName, entry);
-
-                        collection.Media.MarkFileAddIntoDatabase(entryName, currentSelectedDeck.Id);
+                        entry.ExtractToFile(deckFolder.Path + "/" + entry.Name, true);
+                        collection.Media.MarkFileAddIntoDatabase(entry.Name, currentSelectedDeck.Id);
                     }
 
                     progressDialog.Hide();
                     await UIHelper.ShowMessageDialog("Finished inserting media files.");
                 }
-                catch(Exception ex)
-                {
-                    await UIHelper.ShowMessageDialog("Inserting media files: " + ex.Message + "\n" + ex.StackTrace);
-                }
                 finally
                 {
-                    progressDialog.Hide();
-                    collection.Media.Database.Commit();
-                }
+                    progressDialog.Hide();                    
+                    collection.Media.Database.Commit();                    
+                }                
             }
-        }
-
-        private async Task ExtractMediaFile(StorageFolder deckFolder, string entryName, ZipArchiveEntry entry)
-        {
-            try
-            {
-                string path = null;
-                if (entryName.StartsWith("_")) // static files in Anki
-                    path = collection.Media.MediaFolder.Path + Path.DirectorySeparatorChar + entryName;
-                else
-                    path = deckFolder.Path + Path.DirectorySeparatorChar + entryName;
-
-                entry.ExtractToFile(path, true);
-            }
-            catch
-            {
-                await UIHelper.ShowMessageDialog("Failed to extract " + entryName + "\n"
-                                                + "This might happen because the name of this file is too long or it contains illegal characters.");
-            }
-        }
-
-        private Dictionary<string, string> CheckIfAnkiPackage(ZipArchive archive, StorageFolder deckFolder)
-        {
-            Dictionary<string, string> numToName = null;
-            bool isHasCollectionFile = false;
-            bool isHasMediaMapping = false;
-            foreach (var entry in archive.Entries)
-            {
-                if (String.Equals(entry.Name, Constant.COLLECTION_NAME, StringComparison.Ordinal))
-                    isHasCollectionFile = true;
-                else if (String.Equals(entry.Name, "media", StringComparison.Ordinal))
-                {
-                    numToName = GetAnkiMediaMapping(entry, deckFolder);
-                    if(numToName != null)
-                        isHasMediaMapping = true;
-                }
-                else
-                    continue;
-
-                if (isHasCollectionFile && isHasMediaMapping)
-                    return numToName;
-            }
-
-            if (isHasCollectionFile && !isHasMediaMapping)
-                throw new Exception("Unable to insert files: No mapping media files found.");
-
-            return null;
-        }
-
-        private Dictionary<string, string> GetAnkiMediaMapping(ZipArchiveEntry entry, StorageFolder deckFolder)
-        {
-            Dictionary<string, string> numToName = new Dictionary<string, string>();
-            try
-            {                
-                entry.ExtractToFile(deckFolder.Path + "/" + entry.Name, true);
-                using (FileStream mediaMapFile = new FileStream(deckFolder.Path + "/" + "media", FileMode.Open))
-                {
-                    //WARNING: Java ver needs opposite mapping since their extraction method requires it.
-                    JsonObject json = JsonObject.Parse(AnkiCore.Sync.HttpSyncer.Stream2String(mediaMapFile));
-                    string name;
-                    string num;
-                    foreach (var jr in json)
-                    {
-                        num = jr.Key;
-                        name = jr.Value.GetString();
-                        numToName.Add(num, name);
-                    }
-                }
-                File.Delete(deckFolder.Path + "/" + entry.Name);
-                return numToName;
-            }
-            catch
-            {
-                return null;
-            }            
         }
 
         private void ResetFlags()
@@ -322,7 +230,7 @@ namespace AnkiU.UserControls
 
         private async void FolderPickerButtonClick(object sender, RoutedEventArgs e)
         {
-            mediaZipFile = await UIHelper.OpenFilePicker(UIConst.MEDIA_BACKUP_TOKEN, ".zip", ".apkg");            
+            mediaZipFile = await UIHelper.OpenFilePicker(UIConst.MEDIA_BACKUP_TOKEN, ".zip");            
             if(mediaZipFile != null)            
                 backupRootFolderTextBox.Text = mediaZipFile.Path;
             mediaInsertFlyout.ShowAt(placeToShow);

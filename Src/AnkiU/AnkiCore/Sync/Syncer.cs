@@ -90,7 +90,7 @@ namespace AnkiU.AnkiCore.Sync
                 if (!serverMeta.GetNamedBoolean("cont"))
                 {
                     // Don't add syncMsg; it can be fetched by UI code using the accessor
-                    result = new string[] { "serverAbort", syncMsg };
+                    result = new string[] { "serverAbort" };
                     return result;
                 }
                 else
@@ -114,19 +114,19 @@ namespace AnkiU.AnkiCore.Sync
                 if (diff > 300)
                 {
                     collection.Log(args: "clock off");
-                    result = new string[] { "clockOff", diff.ToString(), syncMsg };
+                    result = new string[] { "clockOff", diff.ToString() };
                     return result;
                 }
                 if (clientModifiedTime == serverModifiedTime)
                 {
                     collection.Log(args: "no changes");
-                    result = new string[] { "noChanges", syncMsg};
+                    result = new string[] { "noChanges" };
                     return result;
                 }
                 else if (clientScm != serverScm)
                 {
                     collection.Log(args: "schema diff");
-                    result = new string[] { "fullSync", syncMsg };
+                    result = new string[] { "fullSync" };
                     return result;
                 }
                 isClientNewer = clientModifiedTime > serverModifiedTime;
@@ -134,7 +134,7 @@ namespace AnkiU.AnkiCore.Sync
                 if (!collection.BasicCheck())
                 {
                     collection.Log(args: "basic check");
-                    result = new string[] { "basicCheckFailed", syncMsg };
+                    result = new string[] { "basicCheckFailed" };
                     return result;
                 }
 
@@ -169,19 +169,18 @@ namespace AnkiU.AnkiCore.Sync
                     }
                 }
 
-                
-                // step 4: stream to server                                
+                // step 4: stream to server
                 while (true)
                 {
                     JsonObject json = Chunk();
                     collection.Log(args: new object[] { "client chunk", json });
                     JsonObject chunk = new JsonObject();
                     chunk.Add("chunk", json);
-                    await server.ApplyChunk(chunk);                    
+                    await server.ApplyChunk(chunk);
                     if (json.GetNamedBoolean("done"))
                     {
                         break;
-                    }                    
+                    }
                 }
                 // step 5: sanity check
                 JsonObject clientCheck = SanityCheck();
@@ -189,18 +188,18 @@ namespace AnkiU.AnkiCore.Sync
                 if (severCheck == null || !severCheck.GetNamedString("status", "bad").Equals("ok"))
                 {
                     collection.Log(args: new object[] { "sanity check failed", clientCheck, severCheck });
-                    result = new string[] { "sanityCheckError", null, syncMsg };
+                    result = new string[] { "sanityCheckError", null };
                     return result;
                 }
                 // finalize
                 long timeModified = await server.Finish();
                 if (timeModified == 0)
                 {
-                    result = new string[] { "finishError", syncMsg };
+                    result = new string[] { "finishError" };
                     return result;
                 }
                 Finish(timeModified);
-                result = new string[] { "success", syncMsg };
+                result = new string[] { "success" };
             }
             catch(HttpSyncerException ex)
             {
@@ -617,7 +616,6 @@ namespace AnkiU.AnkiCore.Sync
             }
         }
 
-        private int currentCursor = 0;
         public JsonObject Chunk()
         {
             JsonObject buf = new JsonObject();
@@ -629,10 +627,10 @@ namespace AnkiU.AnkiCore.Sync
                 var listObject = CursorForTable(curTable);
                 JsonArray rows = new JsonArray();
                 int fetched = 0;
-                for (int i = currentCursor; i < listObject.Count; i++)
+                foreach (object[] objArray in listObject)
                 {
                     JsonArray r = new JsonArray();
-                    foreach (object obj in listObject[i])
+                    foreach (object obj in objArray)
                     {
                         if (obj is String)
                             r.Add(JsonValue.CreateStringValue(Convert.ToString(obj)));
@@ -640,18 +638,13 @@ namespace AnkiU.AnkiCore.Sync
                             r.Add(JsonValue.CreateNumberValue(Convert.ToDouble(obj)));
                     }
                     rows.Add(r);
-                    fetched++;
-                    if (fetched == lim)
-                    {
-                        currentCursor += fetched;
+                    if (++fetched == lim)
                         break;
-                    }
                 }
                 if (fetched != lim)
                 {
                     // table is empty
                     tablesLeft.RemoveFirst();
-                    currentCursor = 0;
 
                     // if we're the client, mark the objects as having been sent
                     if (!collection.IsServer)

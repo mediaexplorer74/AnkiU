@@ -100,20 +100,16 @@ namespace AnkiU.UserControls
                 Show(width);
         }
 
-        private bool isNightMode = false;
         public void ChangeReadMode(bool isNightMode)
-        {
-            if (this.isNightMode == isNightMode)
-                return;
-            this.isNightMode = isNightMode;
+        {            
             if(isNightMode)
             {
-                //userControl.Background = UIHelper.BackgroundAcrylicDarkBrush;
+                userControl.Background = Application.Current.Resources["DarkerGray"] as SolidColorBrush;
                 userControl.Foreground = Application.Current.Resources["ForeGroundLight"] as SolidColorBrush;
             }
             else
             {
-                //userControl.Background = UIHelper.BackgroundAcrylicLightBrush;
+                userControl.Background = new SolidColorBrush(Windows.UI.Colors.White);
                 userControl.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
             }
         }
@@ -186,8 +182,8 @@ namespace AnkiU.UserControls
 
         private string GetFieldSearchString()
         {
-            if (noteFieldsViewFlyout == null || noteFieldsViewFlyout.SelectedFields.Count == 0)
-                return "";
+            if (noteFieldsViewFlyout == null || noteFieldsViewFlyout.SelectedFields.Count == 0)            
+                return "";            
 
             if (String.IsNullOrWhiteSpace(fieldContentTextBox.Text))            
                 return "";            
@@ -321,18 +317,10 @@ namespace AnkiU.UserControls
             cardState.Add(IS_SUSPEND, false);
         }
 
-        private async void CheckBoxCheckedHandler(object sender, RoutedEventArgs e)
+        private void CheckBoxCheckedHandler(object sender, RoutedEventArgs e)
         {
             var checkBox = sender as CheckBox;
-            if (checkBox != null)
-                ChangeCardStateString(checkBox, true);
-            await WarningInvalidStatesSelection();
-        }
-
-        private async Task WarningInvalidStatesSelection()
-        {
-            if ((bool)reviewCardStateCheckBox.IsChecked && (bool)newCardStateCheckBox.IsChecked)
-                await UIHelper.ShowMessageDialog("A card can't have both \"New\" and \"Review\" state. This is an invalid search");
+            ChangeCardStateString(checkBox, true);
         }
 
         private void ChangeCardStateString(CheckBox checkBox, bool state)
@@ -422,7 +410,7 @@ namespace AnkiU.UserControls
             ShowCommandCheckClick?.Invoke(sender, e);
         }
 
-        private async void OnFieldListViewButtonClick(object sender, RoutedEventArgs e)
+        private async void FieldListViewButtonClick(object sender, RoutedEventArgs e)
         {
             if (!(await InitFieldFlyoutIfNeeded()))
                 return;
@@ -466,14 +454,6 @@ namespace AnkiU.UserControls
         private void NoteFieldsViewFlyoutClosed(object sender, RoutedEventArgs e)
         {
             fieldListTextBox.Text = String.Join("; ", noteFieldsViewFlyout.SelectedFields);
-        }
-
-        private async void OnFieldContentTextBoxTextChanged(object sender, TextChangedEventArgs e)
-        {
-            if(noteFieldsViewFlyout == null || noteFieldsViewFlyout.SelectedFields.Count == 0)
-            {
-                await UIHelper.ShowMessageDialog("Please select a field name (the space on the left) first!");
-            }
         }
     }
 }

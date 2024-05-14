@@ -265,13 +265,7 @@ function KeyPress(e) {
 
         //s
         if (evtobj.keyCode == 83) {
-            NotifyButtonClick('saveS');
-            return false;
-        }
-
-        //Enter
-        if (evtobj.keyCode == 13) {
-            NotifyButtonClick('saveE');
+            NotifyButtonClick('save');
             return false;
         }
 
@@ -309,14 +303,13 @@ function AddField(name) {
 
 function RemoveField(name) {
 
-    var divField = GetNameHeaderField(name).parentNode;    
+    var header = GetNameHeaderField(name);
+    header.parentNode.removeChild(header); 
 
     var id = EDITABLE_FIELD_PREFIX + name;
     RemoveEditor(id);
     var field = document.getElementById(id);
     field.parentNode.removeChild(field);
-
-    divField.parentNode.removeChild(divField); 
 }
 
 function RenameField(oldName, newName) {    
@@ -341,17 +334,22 @@ function RemoveEditor(id) {
 
 function MoveField(name, newOrder) {    
 
-    var divField = GetNameHeaderField(name).parentNode;
-    divField.parentNode.removeChild(divField);
+    var header = GetNameHeaderField(name);
+    header.parentNode.removeChild(header);
 
+    var id = EDITABLE_FIELD_PREFIX + name;
+    var field = document.getElementById(id);
+    field.parentNode.removeChild(field);
+       
     if (newOrder == 0) {
-        document.body.insertAdjacentElement('afterbegin', divField);        
+        document.body.insertAdjacentElement('afterbegin', header);        
     }
     else {
         var fields = document.getElementsByClassName('editable');
-        fields[newOrder - 1].parentNode.insertAdjacentElement('afterEnd', divField);
+        fields[newOrder - 1].insertAdjacentElement('afterEnd', header);
     }
 
+    header.insertAdjacentElement('afterEnd', field);
 }
 
 function ShowPopup(name) {    

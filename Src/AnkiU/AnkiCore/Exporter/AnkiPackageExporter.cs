@@ -31,8 +31,6 @@ namespace AnkiU.AnkiCore.Exporter
 {
     public class AnkiPackageExporter : AnkiExporter
     {
-        private const string MEDIA_BASE_FOLDER = "-1";
-
         public delegate void ExportFinishedHandler(string message);
         public event ExportFinishedHandler ExportFinishedEvent;
 
@@ -130,69 +128,48 @@ namespace AnkiU.AnkiCore.Exporter
             }
             finally
             {
-#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
                 sourceCol.ReOpen();
-#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
             }                        
         }
 
         private async Task<KeyValuePair<JsonObject, JsonObject>> PackageMediaFiles(ZipArchive archive)
         {            
-            JsonObject mediaAnki = new JsonObject();
+            JsonObject media = new JsonObject();
             JsonObject mediaAnkiU = new JsonObject();            
 
             if (sourceCol.Media.MediaFolder != null && includeMedia)
             {
                 var folders = await sourceCol.Media.MediaFolder.GetFoldersAsync();
-                int count = await MapAndAddMediafiles(archive, mediaAnki, mediaAnkiU, folders);
-                await MapAndAddAllStaticMediafiles(archive, mediaAnki, mediaAnkiU, count);
+                await MapAndAddMediafires(archive, media, mediaAnkiU, folders);
             }
-            return new KeyValuePair<JsonObject, JsonObject>(mediaAnki, mediaAnkiU);
+            return new KeyValuePair<JsonObject, JsonObject>(media, mediaAnkiU);
         }
 
-        private async Task<int> MapAndAddMediafiles(ZipArchive archive, JsonObject mediaAnki, 
-                                               JsonObject mediaAnkiU, IReadOnlyList<StorageFolder> deckIdFolders)
+        private async Task MapAndAddMediafires(ZipArchive archive, JsonObject media, 
+                                                    JsonObject mediaAnkiU, IReadOnlyList<StorageFolder> deckIdFolders)
         {
-            int count = 0;
+            int c = 0;
             foreach (var folder in deckIdFolders)
             {
                 JsonObject mediaFolderJson = new JsonObject();
                 var mediaFiles = await folder.GetFilesAsync();
                 if (mediaFiles != null && mediaFiles.Count != 0)
                 {
-                    count = MapMediaFiles(archive, mediaAnki, count, mediaFolderJson, mediaFiles);
+                    foreach (var f in mediaFiles)
+                    {
+                        string index = c.ToString();
+                        archive.CreateEntryFromFile(f.Path, index);
+                        media[index] = JsonValue.CreateStringValue(f.Name);
+                        mediaFolderJson[index] = JsonValue.CreateStringValue(f.Name);
+                        c++;
+                    }
                     mediaAnkiU[folder.Name] = mediaFolderJson;
                 }
             }
-            return count;
         }
 
-        private async Task MapAndAddAllStaticMediafiles(ZipArchive archive, JsonObject mediaAnki, JsonObject mediaAnkiU, int count)
-        {
-            JsonObject mediaFolderJson = new JsonObject();
-            var mediaFiles = await sourceCol.Media.MediaFolder.GetFilesAsync();
-            if (mediaFiles != null && mediaFiles.Count != 0)
-            {
-                count = MapMediaFiles(archive, mediaAnki, count, mediaFolderJson, mediaFiles);
-                mediaAnkiU[MEDIA_BASE_FOLDER] = mediaFolderJson;
-            }
-        }
-
-        private static int MapMediaFiles(ZipArchive archive, JsonObject mediaAnki, int count, JsonObject mediaFolderJson, IReadOnlyList<StorageFile> mediaFiles)
-        {
-            foreach (var f in mediaFiles)
-            {
-                string index = count.ToString();
-                archive.CreateEntryFromFile(f.Path, index);
-                mediaAnki[index] = JsonValue.CreateStringValue(f.Name);
-                mediaFolderJson[index] = JsonValue.CreateStringValue(f.Name);
-                count++;
-            }
-
-            return count;
-        }
-
-        private async Task<KeyValuePair<JsonObject, JsonObject>> ExportFiltered(StorageFolder folder, ZipArchive archive, string fileName)
+        private async Task<KeyValuePair<JsonObject, JsonObject>> ExportFiltered(StorageFolder folder, ZipArchive archive, 
+                                                                                string fileName)
         {
             // export into the anki2 file
             string colfile = fileName.Replace(".apkg", ".anki2");
@@ -204,40 +181,17 @@ namespace AnkiU.AnkiCore.Exporter
             // and media
             prepareMedia();
 
-            JsonObject mediaAnki = new JsonObject();
+            JsonObject media = new JsonObject();
             JsonObject mediaAnkiU = new JsonObject();
             StorageFolder sourMediaFolder = sourceCol.Media.MediaFolder;
 
             if (sourMediaFolder != null && includeMedia)
             {
                 var folders = await GetDeckMediaFolders(deckId, sourMediaFolder);
-                int count = await MapAndAddMediafiles(archive, mediaAnki, mediaAnkiU, folders);
-                await MapAndAddFilteredStaticMediafiles(archive, mediaAnki, mediaAnkiU, count);
+                await MapAndAddMediafires(archive, media, mediaAnkiU, folders);
             }
 
-            return new KeyValuePair<JsonObject, JsonObject>(mediaAnki, mediaAnkiU);
-        }
-
-        private async Task MapAndAddFilteredStaticMediafiles(ZipArchive archive, JsonObject mediaAnki, JsonObject mediaAnkiU, int count)
-        {
-            JsonObject mediaFolderJson = new JsonObject();
-            var staticMediaFiles = (await sourceCol.Media.MediaFolder.GetFilesAsync()).ToList();
-            if (staticMediaFiles.Count == 0 || mediaFiles.Count == 0)
-                return;
-
-            for(int i = 0; i < staticMediaFiles.Count;)
-            {
-                if(mediaFiles.Contains(staticMediaFiles[i].Name))                
-                    i++;
-                else                
-                    staticMediaFiles.RemoveAt(i);                
-            }
-
-            if (staticMediaFiles.Count != 0)
-            {
-                count = MapMediaFiles(archive, mediaAnki, count, mediaFolderJson, staticMediaFiles);
-                mediaAnkiU[MEDIA_BASE_FOLDER] = mediaFolderJson;
-            }
+            return new KeyValuePair<JsonObject, JsonObject>(media, mediaAnkiU);
         }
 
         private async Task<IReadOnlyList<StorageFolder>> GetDeckMediaFolders(long? deckId, StorageFolder sourMediaFolder)

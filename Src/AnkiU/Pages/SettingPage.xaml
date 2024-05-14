@@ -20,9 +20,8 @@
                       ZoomMode="Disabled">
             <Grid >
                 <Pivot x:Name="rootTab" Visibility="Visible"
-                       Foreground="White"  
-                       Background="{StaticResource ButtonBackGroundNormal}"                             
-                       BorderThickness="0"
+                       Foreground="{Binding Foreground, ElementName=userControl}"  
+                       Background="{Binding Background, ElementName=userControl}"                             
                        Style="{StaticResource TabsStylePivotStyle}" Grid.Row="0">
                     <PivotItem x:Name="learningTab"  Background="White" Padding="0" Margin="0" >
                         <PivotItem.Header >
@@ -31,7 +30,7 @@
                             FontWeight="SemiBold"
                             Style="{StaticResource CaptionTextBlockStyle}"    
                             IsTextScaleFactorEnabled="False"                                       
-                            Foreground="White" 
+                            Foreground="{Binding Foreground, ElementName=userControl}" 
                             TextAlignment="Center" 
                             HorizontalAlignment="Center" Width="75"/>
                         </PivotItem.Header>
@@ -48,7 +47,7 @@
                             FontWeight="SemiBold"
                             Style="{StaticResource CaptionTextBlockStyle}"    
                             IsTextScaleFactorEnabled="False"
-                            Foreground="White" 
+                            Foreground="{Binding Foreground, ElementName=userControl}"
                             TextAlignment="Center"
                             HorizontalAlignment="Center" Width="75"/>
                         </PivotItem.Header>
@@ -68,8 +67,8 @@
                             </Grid.RowDefinitions>
 
                             <TextBlock Grid.Row="0" Grid.ColumnSpan="4" Foreground="{StaticResource ButtonBackGroundCompliment}"
-                                       FontWeight="SemiBold" Text="Media folders are not backed up." TextAlignment="Center"
-                                       TextWrapping="Wrap" FontSize="14"
+                                       FontWeight="SemiBold" Text="Media folders are not automatically backed up." TextAlignment="Center"
+                                       TextWrapping="Wrap" FontSize="18"
                                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="5,0,5,10" />
 
                             <TextBlock Margin="0,0,0,12" Grid.Row="1" Text="Number of backups " Foreground="{Binding Foreground, ElementName=userControl}" 
@@ -78,9 +77,10 @@
                                              Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" TextAlignment="Left" 
                                  Foreground="{Binding Foreground, ElementName=userControl}">
                             </controls:NumbericTextBox>
-                            <Button Grid.Column="3" Style="{StaticResource DefaultButtonRevealStyle}" Background="Transparent"
-                                     Padding="0,0,0,5" x:Name="openBackUpFolderButton" HorizontalAlignment="Left" Width="40"  VerticalAlignment="Stretch"
-                                     Grid.Row="1" Margin="5, 0, 0, 0" VerticalContentAlignment="Bottom"
+                            <Button Grid.Column="3" Style="{StaticResource ButtonContentOcpacity}" 
+                                Background="Transparent" Padding="0,0,0,5" BorderThickness="0" BorderBrush="{Binding Foreground, ElementName=userControl}"
+                                x:Name="openBackUpFolderButton" HorizontalAlignment="Left" Width="40"  VerticalAlignment="Stretch"
+                                     Grid.Row="1" Margin="0, 0, 0, 0" VerticalContentAlignment="Bottom"
                                     Click="OpenBackUpFolderClick">
                                 <Path Style="{StaticResource OpenFolderIcon}" Fill="Transparent" Stroke="{Binding Foreground, ElementName=userControl}" Width="27" Height="20" />
                             </Button>
@@ -129,105 +129,18 @@
                         </Grid>
                     </PivotItem>
 
-                    <PivotItem x:Name="sync"  Background="{Binding Background, ElementName=learningTab}" 
-                               Padding="0" Margin="0" >
+                    <PivotItem x:Name="sync"  Background="{Binding Background, ElementName=learningTab}" Padding="0" Margin="0" >
                         <PivotItem.Header >
                             <TextBlock Text="SYNC"                            
                             FontSize="15"                            
                             FontWeight="SemiBold"
                             Style="{StaticResource CaptionTextBlockStyle}"    
                             IsTextScaleFactorEnabled="False"
-                                  Foreground="White" 
+                            Foreground="{Binding Foreground, ElementName=userControl}"
                             TextAlignment="Center"
                             HorizontalAlignment="Center" Width="75"/>
                         </PivotItem.Header>
-                        <Grid Margin="5,10,0,0" >
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220" />
-                                <ColumnDefinition Width="5" />
-                                <ColumnDefinition Width="*" MaxWidth="200"/>
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Text="Sync service" TextAlignment="Right" 
-                                       VerticalAlignment="Center"  
-                                       Foreground="{Binding Foreground, ElementName=userControl}" />
-                            <ComboBox x:Name="syncServiceCombobox" Grid.Column="2" SelectedIndex="0"
-                                       Foreground="{Binding Foreground, ElementName=userControl}" 
-                                      Background="Transparent" HorizontalAlignment="Left">
-                                <ComboBoxItem Content="OneDrive" />
-                                <ComboBoxItem Content="AnkiWeb" />
-                            </ComboBox>
-
-                            <Button HorizontalAlignment="Left" Grid.Row="1" Margin="0,5,0,5" x:Name="ankiWebLogoutButton"  Foreground="White" 
-                                    Grid.Column="2" Padding="8,0,8,0" Height="35" Width="{Binding ActualWidth, ElementName=syncServiceCombobox, Mode=OneTime}" 
-                                    Click="OnAnkiWebLogoutButtonClick"
-                                    Content="Log out" Style="{StaticResource ButtonBlue}" Visibility="Collapsed" />
-
-                            <Button HorizontalAlignment="Left" Grid.Row="2" Margin="0,5,0,5"
-                                    Visibility="Collapsed"  Foreground="White" 
-                                    Grid.Column="2" Padding="8,0,8,0" Height="35" 
-                                    x:Name="forceFullSyncButton"
-                                    Click="OnForceFullSyncButtonClick"                                    
-                                    Content="Force Full Sync"  Style="{StaticResource ButtonBlue}"/>
-
-                            <TextBlock Text="Automatically sync on startup"   Grid.Row="3" Margin="0,0,0,3"  Foreground="{Binding Foreground, ElementName=userControl}" 
-                                       VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                            <CheckBox Grid.Row="3" Grid.Column="2"  x:Name="syncOnOpenCheckBox"
-                                      VerticalAlignment="Center" HorizontalAlignment="Left"
-                                      Foreground="{Binding Foreground, ElementName=userControl}" 
-                                      BorderBrush="{Binding Foreground, ElementName=userControl}"
-                                      IsThreeState="False"/>
-
-                            <TextBlock Text="Automatically sync on closing"   Grid.Row="4" Margin="0,0,0,3"  Foreground="{Binding Foreground, ElementName=userControl}" 
-                                       VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                            <CheckBox Grid.Row="4" Grid.Column="2"  x:Name="syncOnCloseCheckBox"
-                                      VerticalAlignment="Center" HorizontalAlignment="Left"
-                                      Foreground="{Binding Foreground, ElementName=userControl}" 
-                                      BorderBrush="{Binding Foreground, ElementName=userControl}"
-                                      IsThreeState="False"/>
-                            
-                            <TextBlock Grid.Row="5" x:Name="syncMediaText" Text="Also sync media files" Margin="0,0,0,3"  Foreground="{Binding Foreground, ElementName=userControl}" 
-                                       VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                            <CheckBox Grid.Row="5" Grid.Column="2" x:Name="syncMediaCheckBox"
-                                      VerticalAlignment="Center" HorizontalAlignment="Left"
-                                      IsThreeState="False"
-                                      Foreground="{Binding Foreground, ElementName=userControl}" 
-                                      BorderBrush="{Binding Foreground, ElementName=userControl}"
-                                      />
-
-                            <TextBlock Grid.Row="6" x:Name="syncMediaAnkiWebNotify" Text="Dont display media warning msg" Margin="0,0,0,3"  Foreground="{Binding Foreground, ElementName=userControl}" 
-                                       VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                            <CheckBox Grid.Row="6" Grid.Column="2" x:Name="syncMediaAnkiWebNotifyCheckBox"
-                                      VerticalAlignment="Center" HorizontalAlignment="Left"
-                                      IsThreeState="False"
-                                      Foreground="{Binding Foreground, ElementName=userControl}" 
-                                      BorderBrush="{Binding Foreground, ElementName=userControl}"
-                                      />
-
-                        </Grid>
-                    </PivotItem>
-
-                    <PivotItem x:Name="Misc"  Background="{Binding Background, ElementName=learningTab}" Padding="0" Margin="0" >
-                        <PivotItem.Header >
-                            <TextBlock Text="MISC"                            
-                            FontSize="15"                            
-                            FontWeight="SemiBold"
-                            Style="{StaticResource CaptionTextBlockStyle}"    
-                            IsTextScaleFactorEnabled="False"
-                                  Foreground="White" 
-                            TextAlignment="Center"
-                            HorizontalAlignment="Center" Width="75"/>
-                        </PivotItem.Header>
-                        <Grid Margin="5,10,0,0" >
+                        <Grid Margin="5,10,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="5" />
@@ -236,15 +149,47 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Text="Change save note shortcut to Ctrl + Enter"   Grid.Row="3" Margin="0,0,0,3"  Foreground="{Binding Foreground, ElementName=userControl}" 
+                            <TextBlock Text="Sync service" TextAlignment="Right" VerticalAlignment="Center" />
+                            <ComboBox x:Name="syncServiceCombobox" Grid.Column="2" SelectedIndex="0"
+                                       Foreground="{Binding Foreground, ElementName=userControl}" 
+                                      Background="Transparent" >
+                                <ComboBoxItem Content="OneDrive" />
+                                <ComboBoxItem Content="AnkiWeb" />
+                            </ComboBox>
+                            
+                            <Button HorizontalAlignment="Left" Grid.Row="1" Margin="0,5,0,5" x:Name="ankiWebLogoutButton"
+                                    Grid.Column="2" Padding="8,0,8,0" Height="35" Width="{Binding ActualWidth, ElementName=syncServiceCombobox, Mode=OneTime}" 
+                                    Click="OnAnkiWebLogoutButtonClick"
+                                    Content="Log out" Style="{StaticResource ButtonBlue}" Visibility="Collapsed" />
+
+                            <Button HorizontalAlignment="Left" Grid.Row="2" Margin="0,5,0,5"
+                                    Visibility="Collapsed"
+                                    Grid.Column="2" Padding="8,0,8,0" Height="35" 
+                                    x:Name="forceFullSyncButton"
+                                    Click="OnForceFullSyncButtonClick"                                    
+                                    Content="Force Full Sync"  Style="{StaticResource ButtonBlue}"/>
+                            
+                            <TextBlock Text="Automatically sync on startup"   Grid.Row="3" Margin="0,0,0,3"
                                        VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                            <CheckBox Grid.Row="3" Grid.Column="2"  x:Name="saveShortcutCheckBox"
-                                      VerticalAlignment="Center" HorizontalAlignment="Left" 
+                            <CheckBox Grid.Row="3" Grid.Column="2"  x:Name="syncOnOpenCheckBox"
+                                      VerticalAlignment="Center" HorizontalAlignment="Left"
                                       Foreground="{Binding Foreground, ElementName=userControl}" 
                                       BorderBrush="{Binding Foreground, ElementName=userControl}"
                                       IsThreeState="False"/>
+                            
+                            <TextBlock Grid.Row="4" x:Name="syncMediaText" Text="Also sync media files" Margin="0,0,0,3"
+                                       VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                            <CheckBox Grid.Row="4" Grid.Column="2" x:Name="syncMediaCheckBox"
+                                      VerticalAlignment="Center" HorizontalAlignment="Left"
+                                      IsThreeState="False"
+                                      Foreground="{Binding Foreground, ElementName=userControl}" 
+                                      BorderBrush="{Binding Foreground, ElementName=userControl}"
+                                      />
 
                         </Grid>
                     </PivotItem>

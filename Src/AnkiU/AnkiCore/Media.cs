@@ -44,7 +44,7 @@ namespace AnkiU.AnkiCore
         public const string IMAGE_HTML = "<img src='{0}'>";
         public const string SOUND_HTML = "[sound:{0}]";
         public const char DECK_NAME_SEPARATOR = '/';
-        private const int MAX_PATH_LENGTH = 250;
+
         private readonly static Regex illegalCharRegex;
         private readonly static Regex remoteRegex;
      
@@ -157,7 +157,7 @@ namespace AnkiU.AnkiCore
                 if (collection.IsServer)
                     return;
 
-                mediaDatabaseName = Constant.MEDIA_DB_NAME_ANKI_U;
+                mediaDatabaseName = Constant.MEDIA_DB_NAME;
 
                 bool create = false;
                 store = (await appFolder.TryGetItemAsync(mediaDatabaseName)) as StorageFile;
@@ -282,10 +282,6 @@ namespace AnkiU.AnkiCore
             //string checkSum = await Utils.FileChecksum(sourceFile);
             try
             {
-                var pathLength = (mediaFolder.Path + legalName).Length;
-                if (pathLength > MAX_PATH_LENGTH)                
-                    throw new Exception("File name is too long! Please rename the file first.");
-                
                 StorageFile newFile;
                 while (true)
                 {                                     
@@ -321,7 +317,7 @@ namespace AnkiU.AnkiCore
             }
             catch(Exception e)
             {
-                throw new Exception("Media.WriteData Failed: " + e.Message, e);
+                throw new Exception("Media.WriteData Failed!", e);
             }
         }
 

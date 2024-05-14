@@ -115,7 +115,7 @@ namespace AnkiU.Views
             backupDecksId.Remove(data.Id);
         }
 
-        private async void OkButtonClickHandler(object sender, RoutedEventArgs e)
+        private void OkButtonClickHandler(object sender, RoutedEventArgs e)
         {
             if (rootFolder == null)
                 return;
@@ -123,56 +123,55 @@ namespace AnkiU.Views
             mediaBackupFlyout.Hide();
             PrepareProgessDialog();
 
-            await StartBackupMedias();            
+            StartBackupMedias();            
         }
 
-        private async Task StartBackupMedias()
+        private void StartBackupMedias()
         {
-            var fileName = UIHelper.GetDateTimeStringForName();
-            fileName.Insert(0, "AnkiBackupMedia ");
-            StorageFolder backUpFolder = await rootFolder.CreateFolderAsync(fileName.ToString(), CreationCollisionOption.GenerateUniqueName);
-            StorageFolder appBackUpFolder = await Storage.AppLocalFolder.CreateFolderAsync(fileName.ToString(), CreationCollisionOption.GenerateUniqueName);
-            var deckIDFolders = await collection.Media.MapDeckIdToDeckIdFolder();
-
-            foreach (var folder in deckIDFolders)
+            Task.Run(async () =>
             {
-                if (!backupDecksId.Contains(folder.Key))
-                    continue;
+                var fileName = UIHelper.GetDateTimeStringForName();
+                fileName.Insert(0, "AnkiBackupMedia ");
+                var backUpFolder = await rootFolder.CreateFolderAsync(fileName.ToString(), CreationCollisionOption.GenerateUniqueName);
+                var deckIDFolders = await collection.Media.MapDeckIdToDeckIdFolder();
 
-                var mediaFiles = await folder.Value.GetFilesAsync();
-                int total = mediaFiles.Count;
-                if (total == 0)
-                    continue;
+                foreach (var folder in deckIDFolders)
+                {
+                    if (!backupDecksId.Contains(folder.Key))
+                        continue;
 
-                string deckName = collection.Deck.GetDeckName(folder.Key).Replace(Constant.SUBDECK_SEPERATE, "_");
-                UpdateProgessDialog(deckName);
+                    var files = await folder.Value.GetFilesAsync();
+                    int total = files.Count;
+                    if (total == 0)
+                        continue;
 
-                string zipFileName = deckName + "_" + folder.Value.Name + ".zip";
+                    string deckName = collection.Deck.GetDeckName(folder.Key).Replace(Constant.SUBDECK_SEPERATE, "_");
+                    await UpdateProgessDialog(deckName);
 
-                string path = appBackUpFolder.Path + "\\" + zipFileName;
-                ZipFile.CreateFromDirectory(folder.Value.Path, path, CompressionLevel.NoCompression, false);
-            }
+                    string zipFileName = deckName + "_" + folder.Value.Name + ".zip";
+                    ZipFile.CreateFromDirectory(folder.Value.Path, backUpFolder.Path + "/" + zipFileName);
+                }
 
-            var zipFiles = await appBackUpFolder.GetFilesAsync();
-            foreach (var zip in zipFiles)
-                await zip.CopyAsync(backUpFolder);
-            await appBackUpFolder.DeleteAsync();
-
-            await ShowFinishMessage();
+                await ShowFinishMessage();
+            });
         }
 
-        private void UpdateProgessDialog(string deckName)
+        private async Task UpdateProgessDialog(string deckName)
         {
-            progressDialog.ProgressBarLabel = String.Format("Compressing deck: " + deckName);
+            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {                
+                progressDialog.ProgressBarLabel = String.Format("Compressing deck: " + deckName);                
+            });
         }
 
         private async Task ShowFinishMessage()
         {
-            progressDialog.Hide();
-            string message = "To restore media files from backups please use \"Insert media files\" "
-                             + "and choose a backed up zip file.";
-            ContentMessageDialog contentMessageDialog = new ContentMessageDialog("Backup Finished", message);
-            await contentMessageDialog.ShowAsync();
+            await dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+            {
+                progressDialog.Hide();
+                await UIHelper.ShowMessageDialog("To restore media files from backups please use \"Insert media files\" "
+                                                + "and choose a backed up zip file.", "Backup Finished");
+            });
         }
 
         private void PrepareProgessDialog()

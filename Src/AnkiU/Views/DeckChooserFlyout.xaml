@@ -11,8 +11,7 @@
     d:DesignWidth="400">
 
     <UserControl.Resources>
-        <Flyout x:Name="deckChooserFlyout" x:Key="deckChooserFlyoutTemplate" 
-                FlyoutPresenterStyle="{StaticResource DefaultFlyoutPresenterStyle}">
+        <Flyout x:Name="deckChooserFlyout" x:Key="deckChooserFlyoutTemplate" >
             <ContentPresenter>
                 <Grid Width="300" >
                     <Grid.RowDefinitions>

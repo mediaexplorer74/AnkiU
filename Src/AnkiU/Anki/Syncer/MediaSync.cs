@@ -117,14 +117,14 @@ namespace AnkiU.Anki.Syncer
             var remoteMediaDBZipItem = await fullSync.TryGetItemInSyncFolderAsync(Constant.MEDIA_DB_NAME_ZIP);
             if (remoteMediaDBZipItem == null)
             {
-                var remoteMediaDBItem = await fullSync.TryGetItemInSyncFolderAsync(Constant.MEDIA_DB_NAME_ANKI_U);
+                var remoteMediaDBItem = await fullSync.TryGetItemInSyncFolderAsync(Constant.MEDIA_DB_NAME);
                 if (remoteMediaDBItem == null)
                 {
                     await UploadAllMediaFiles();
                     return null;
                 }
 
-                returnFile = await fullSync.CreateTempFileAsync(Constant.MEDIA_DB_NAME_ANKI_U);
+                returnFile = await fullSync.CreateTempFileAsync(Constant.MEDIA_DB_NAME);
                 await fullSync.SyncInstance.DownloadItemWithPathAsync(Constant.MEDIA_DB_SYNC_PATH, returnFile);
             }
             else
@@ -137,7 +137,7 @@ namespace AnkiU.Anki.Syncer
                 {
                     zip.ExtractToDirectory(fullSync.TempSyncFolder.Path);
                 }
-                returnFile = await fullSync.TempSyncFolder.TryGetItemAsync(Constant.MEDIA_DB_NAME_ANKI_U) as StorageFile;
+                returnFile = await fullSync.TempSyncFolder.TryGetItemAsync(Constant.MEDIA_DB_NAME) as StorageFile;
                 if (returnFile == null)
                 {
                     bool isUploadAll = await UIHelper.AskUserConfirmation("Media database in server is corrupted."
@@ -258,16 +258,20 @@ namespace AnkiU.Anki.Syncer
 
         private async Task DownloadMediaFilesFromSever(Dictionary<long, StorageFolder> deckMediaFolders, string remoteMediaFolderPath, MediaTable media, long deckId, string name)
         {
-            var oldFile = await deckMediaFolders[deckId].TryGetItemAsync(name) as StorageFile;
-            if (oldFile != null)
-                await oldFile.DeleteAsync();
+            try
+            {
+                var oldFile = await deckMediaFolders[deckId].TryGetItemAsync(name) as StorageFile;
+                if (oldFile != null)
+                    await oldFile.DeleteAsync();
 
-            var newFile = await deckMediaFolders[deckId].CreateFileAsync(name,
-                                                CreationCollisionOption.ReplaceExisting);
-            var remoteFilePath = remoteMediaFolderPath + media.RelativePathName;
-            await fullSync.SyncInstance.DownloadItemWithPathAsync(remoteFilePath, newFile, true); //Not found items should not stop syncing
+                var newFile = await deckMediaFolders[deckId].CreateFileAsync(name,
+                                                    CreationCollisionOption.ReplaceExisting);
+                var remoteFilePath = remoteMediaFolderPath + media.RelativePathName;
+                await fullSync.SyncInstance.DownloadItemWithPathAsync(remoteFilePath, newFile);
+            }
+            catch //Syncing shouldn't stop if some files are not available
+            { }
         }
-
         private async Task RemoveMediaFilesInLocal(Dictionary<long, StorageFolder> deckMediaFolders, MediaTable media, long deckId, string name)
         {
             if (deckMediaFolders.ContainsKey(deckId))
@@ -290,7 +294,7 @@ namespace AnkiU.Anki.Syncer
         private async Task UpdateLocalMediaDatabase()
         {
             fullSync.MainPage.Collection.Media.Database.Close();
-            await remoteMediaDBFile.CopyAsync(Storage.AppLocalFolder, Constant.MEDIA_DB_NAME_ANKI_U, NameCollisionOption.ReplaceExisting);
+            await remoteMediaDBFile.CopyAsync(Storage.AppLocalFolder, Constant.MEDIA_DB_NAME, NameCollisionOption.ReplaceExisting);
             await fullSync.MainPage.Collection.Media.ConnectDatabaseAsync();
         }
 
@@ -462,14 +466,14 @@ namespace AnkiU.Anki.Syncer
         {
             fullSync.MainPage.Collection.Media.SetLastUnixTimeSync(DateTimeOffset.Now.ToUnixTimeSeconds());
             fullSync.MainPage.Collection.Media.MarkDatabaseClean();
-            var localFile = await Storage.AppLocalFolder.GetFileAsync(Constant.MEDIA_DB_NAME_ANKI_U);
+            var localFile = await Storage.AppLocalFolder.GetFileAsync(Constant.MEDIA_DB_NAME);
             var mediaDatabase = await localFile.CopyAsync(fullSync.TempSyncFolder, localFile.Name + "_upload");
 
             var zipFile = await fullSync.TempSyncFolder.CreateFileAsync(Constant.MEDIA_DB_NAME_ZIP + "_upload");
             using (var fileStream = await zipFile.OpenStreamForWriteAsync())
             using (var zip = new ZipArchive(fileStream, ZipArchiveMode.Create))
             {
-                zip.CreateEntryFromFile(mediaDatabase.Path, Constant.MEDIA_DB_NAME_ANKI_U);
+                zip.CreateEntryFromFile(mediaDatabase.Path, Constant.MEDIA_DB_NAME);
             }
             await fullSync.SyncInstance.UploadItemWithPathAsync(zipFile, Constant.ANKIROOT_SYNC_FOLDER + "/" + Constant.MEDIA_DB_NAME_ZIP);
         }

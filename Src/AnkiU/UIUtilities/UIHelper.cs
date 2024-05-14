@@ -66,12 +66,6 @@ namespace AnkiU.UIUtilities
         public static readonly CoreCursor HandCursor = new CoreCursor(CoreCursorType.Hand, 1);
         public static readonly CoreCursor ArrowCursor = new CoreCursor(CoreCursorType.Arrow, 1);
 
-        public static SolidColorBrush ButtonBackGroundNormal { get; private set; }
-                     = Application.Current.Resources["ButtonBackGroundNormal"] as SolidColorBrush;
-
-        public static SolidColorBrush WhiteBrush { get; private set; } = new SolidColorBrush(Windows.UI.Colors.White);
-        public static SolidColorBrush BlackBrush { get; private set; } = new SolidColorBrush(Windows.UI.Colors.Black);
-
         public static SolidColorBrush DeckWithNewOrDueCardsBrush { get; private set; }
                        = Application.Current.Resources["DeckWithNewOrDueCards"] as SolidColorBrush;
         public static SolidColorBrush AppDefaultTileBackgroundBrush { get; private set; }
@@ -83,26 +77,14 @@ namespace AnkiU.UIUtilities
         public static SolidColorBrush DarkerBrush { get; private set; } 
                        = Application.Current.Resources["DarkerGray"] as SolidColorBrush;        
         public static SolidColorBrush ContentNightModeBrush { get; private set; } 
-                       = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 68, 68, 68));
+                       = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 32, 32, 32));
         public static SolidColorBrush Transparent = new SolidColorBrush(Windows.UI.Colors.Transparent);
         public static SolidColorBrush IndioBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 8, 141, 199));
-
-        /*
-        public static AcrylicBrush CommandBarAcrylicLightBrush { get; private set; }
-                     = Application.Current.Resources["CommandBarAcrylicLightBrush"] as AcrylicBrush;
-        public static AcrylicBrush CommandBarAcrylicDarkBrush { get; private set; }
-                = Application.Current.Resources["CommandBarAcrylicDarkBrush"] as AcrylicBrush;
-
-        public static AcrylicBrush BackgroundAcrylicLightBrush { get; private set; }
-              = Application.Current.Resources["DefaultBackgroundAcrylicLightBrush"] as AcrylicBrush;
-        public static AcrylicBrush BackgroundAcrylicDarkBrush { get; private set; }
-           = Application.Current.Resources["DefaultBackgroundAcrylicDarkBrush"] as AcrylicBrush;
-        */
-
+        
         public static Windows.UI.Color ContentNightModeColor { get { return ContentNightModeBrush.Color; } }
         private static Windows.UI.Color defaultInkColorDay = Windows.UI.Color.FromArgb(255, 11, 96, 181);
         public static Windows.UI.Color DefaultInkColorDay { get { return defaultInkColorDay; } }
-        private static Windows.UI.Color defaultInkColorNight = Windows.UI.Color.FromArgb(255, 2, 155, 191);
+        private static Windows.UI.Color defaultInkColorNight = Windows.UI.Color.FromArgb(255, 0, 79, 159);
         public static Windows.UI.Color DefaultInkColorNight { get { return defaultInkColorNight; }  }
         public const double DEFAULT_INK_SIZE = 3;
 
@@ -224,11 +206,19 @@ namespace AnkiU.UIUtilities
         {
             try
             {
-                ConfirmDialog diaglog = new ConfirmDialog();
-                diaglog.Message = content;
-                diaglog.Title = title;
-                await diaglog.ShowAsync();
-                return diaglog.IsContinue;
+                MessageDialog dialog = new MessageDialog(content, title);
+                bool isContinue = false;
+                dialog.Commands.Add(new UICommand("Yes", (command) =>
+                {
+                    isContinue = true;
+                }));
+                dialog.Commands.Add(new UICommand("No", (command) =>
+                {
+                    isContinue = false;
+                }));
+                dialog.DefaultCommandIndex = 1;
+                await dialog.ShowAsync();
+                return isContinue;
             }
             catch(Exception ex)
             {
@@ -333,8 +323,8 @@ namespace AnkiU.UIUtilities
             ChartModel.SubtitleColor = OxyColors.White;
             ChartModel.PlotAreaBorderColor = OxyColors.White;
 
-            ChartModel.PlotAreaBackground = OxyColor.FromRgb(ContentNightModeColor.R, ContentNightModeColor.G, ContentNightModeColor.B);            
-            ChartModel.Background = OxyColor.FromRgb(ContentNightModeColor.R, ContentNightModeColor.G, ContentNightModeColor.B);
+            ChartModel.PlotAreaBackground = OxyColors.Black;            
+            ChartModel.Background = OxyColors.Black;
         }
 
         public static void ChangePlotModelToDay(PlotModel ChartModel)
@@ -449,7 +439,7 @@ namespace AnkiU.UIUtilities
         {            
             var message = new Windows.ApplicationModel.Email.EmailMessage();
             message.Body = messageBody;
-            
+
             var emailRecipient = new Windows.ApplicationModel.Email.EmailRecipient(emailAddress);
             message.To.Add(emailRecipient);            
 

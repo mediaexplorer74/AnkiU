@@ -40,9 +40,9 @@
   word-wrap: break-word;
 }
 
-#cardcontent {
-    color: black;
-    background-color: white;
-    word-wrap: break-word;
+#cardcontent{  
+  color: black;
+  background-color: white; 
+  word-wrap: break-word; 
 }
 

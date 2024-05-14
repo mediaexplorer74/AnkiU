@@ -8,14 +8,13 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
     Foreground="Black"
-    Tag="{StaticResource ButtonBackGroundNormal}"
     d:DesignHeight="300"
     x:Name="userControl"
     d:DesignWidth="400">
 
     <Grid>
         <ComboBox x:Name="comboBox" ItemsSource="{Binding}"
-                  VerticalAlignment="Stretch" BorderBrush="{Binding Tag, ElementName=userControl}"                 
+                  VerticalAlignment="Stretch"                  
                   Background="Transparent" PlaceholderText="Please choose a deck"                   
                   Foreground="{Binding Foreground, ElementName=userControl}"
                   HorizontalAlignment="Stretch" SelectionChanged="ComboBoxSelectionChangedHandler">

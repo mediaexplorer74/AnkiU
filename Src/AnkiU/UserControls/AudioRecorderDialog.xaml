@@ -10,7 +10,6 @@
     FontWeight="SemiBold"
     PrimaryButtonText="Save &amp; Close"    
     PrimaryButtonClick="SaveAndCloseButtonClickHandler"
-    Background="{StaticResource DefaultTextForegroundThemeBrush}"
     SecondaryButtonText="Cancel"
     SecondaryButtonClick="CloseButtonClickHandler">
 

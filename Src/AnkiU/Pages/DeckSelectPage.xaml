@@ -8,14 +8,13 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"         
     x:Name="page"    
-    Background="Transparent"
+    Background="{StaticResource BackgroundNormal}"
     mc:Ignorable="d">
 
     <Page.Resources>
 
-        <MenuFlyout x:Key="DeckContextMenu" MenuFlyoutPresenterStyle="{StaticResource DefaultMenuFlyoutPresenterStyle}">
+        <MenuFlyout x:Key="DeckContextMenu">
             <MenuFlyoutItem  Text="Add Notes" Click="AddNoteMenuFlyoutItemClickHandler" Style="{StaticResource IconMenuFlyoutItem}" Tag="Add" />
-            <MenuFlyoutItem  Text="Custom Study" Click="OnCustomStudyMenuFlyoutItemClick" Style="{StaticResource IconMenuFlyoutItem}" Tag="View" />
             <MenuFlyoutItem  Text="Create Deck Tile" Click="OnMenuFlyoutCreateDeckTileClick" Style="{StaticResource IconMenuFlyoutItem}" Tag="SetTile" />
             <MenuFlyoutItem  Text="Search Cards" Click="SeachCardMenuClickHandler" Style="{StaticResource IconMenuFlyoutItem}" Tag="Find" />
             <MenuFlyoutItem  Text="Statistics" Click="StatsMenuFlyoutItemClick" Style="{StaticResource PathMenuFlyoutItem}" Tag="{StaticResource ChartIcon}" />
@@ -31,7 +30,7 @@
             <MenuFlyoutItem Text="Export Deck" Click= "ExportMenuFlyoutItemClickHanlder" Style="{StaticResource PathMenuFlyoutItem}" Tag="{StaticResource ExportIcon}"/>
         </MenuFlyout>
 
-        <MenuFlyout x:Key="DynamicDeckContextMenu" MenuFlyoutPresenterStyle="{StaticResource DefaultMenuFlyoutPresenterStyle}">
+        <MenuFlyout x:Key="DynamicDeckContextMenu">
             <MenuFlyoutItem  Text="Search Cards" Click="SeachCardMenuClickHandler" Style="{StaticResource IconMenuFlyoutItem}" Tag="Find" />
             <MenuFlyoutSeparator />
             <MenuFlyoutItem Text="Rename" Click="RenameMenuFlyoutItemClickHandler" Style="{StaticResource IconMenuFlyoutItem}" Tag="Rename" />
@@ -40,16 +39,16 @@
             <MenuFlyoutItem Text="Export Deck" Click= "ExportMenuFlyoutItemClickHanlder" Style="{StaticResource PathMenuFlyoutItem}" Tag="{StaticResource ExportIcon}"/>
         </MenuFlyout>
 
-        <MenuFlyout x:Key="CollectionContextMenu" MenuFlyoutPresenterStyle="{StaticResource DefaultMenuFlyoutPresenterStyle}">
+        <MenuFlyout x:Key="CollectionContextMenu">
             <MenuFlyoutItem Text="Sort by date added" Click="SortByDateAddedClick"  />
             <MenuFlyoutItem Text="Sort by name" Click= "SortByNameClick" />
         </MenuFlyout>
         
-        <Flyout x:Name="exportFlyout" Placement="Bottom" x:Key="ExportFlyoutTemplate" FlyoutPresenterStyle="{StaticResource DefaultFlyoutPresenterStyle}">
+        <Flyout x:Name="exportFlyout" Placement="Bottom" x:Key="ExportFlyoutTemplate" >
             <ContentPresenter>
                 <Grid Width="300">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40" />
+                        <RowDefinition Height="30" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -60,48 +59,26 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" 
-                                   Text="Export to:"/>
-                        <TextBox Margin="5,0,0,0" Grid.Column="1" Tag="Black" 
-                                 x:Name="exportFlyoutTextBox" 
-                                 BorderBrush="Black" TextAlignment="Left" 
-                                 VerticalAlignment="Center" 
-                                 HorizontalAlignment="Stretch" IsReadOnly="True"  />
-                        <Button x:Name="exportFolderPickerButton" 
-                                Style="{StaticResource TextBlockButtonStyle}" 
-                                Background="Transparent" 
-                                Grid.Column="2" Padding="0" 
-                                Margin="5,0,0,0" Height="35" 
-                                Width="40" 
-                                Click="ExportFolderPickerButtonClickHandler" >
-                            <Path Style="{StaticResource OpenFolderIcon}" Margin="0" Width="30" 
-                                  Fill="Transparent" Stroke="Black" RenderTransformOrigin="0.5,0.5">
+                        <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="Export to:"/>
+                        <TextBox Margin="5,0,0,0" Grid.Column="1" x:Name="exportFlyoutTextBox" Style="{StaticResource OldTextBoxStyle}" BorderBrush="Black" TextAlignment="Left" VerticalAlignment="Center" HorizontalAlignment="Stretch" IsReadOnly="True"  />
+                        <Button x:Name="exportFolderPickerButton" Style="{StaticResource ButtonGray}" BorderBrush="Black" BorderThickness="1" 
+                                Grid.Column="2" Padding="0" Margin="-2,0,0,0" Height="32" Width="40" Click="ExportFolderPickerButtonClickHandler" >
+                            <Path Style="{StaticResource OpenFolderIcon}" Margin="0" Width="30" Fill="Transparent" Stroke="Black" RenderTransformOrigin="0.5,0.5">
                                 <Path.RenderTransform>
                                     <CompositeTransform ScaleX="0.7" ScaleY="0.7"/>
                                 </Path.RenderTransform>
                             </Path>
                         </Button>
                     </Grid>
-                    <CheckBox x:Name="exportScheduleCheckBox" Grid.Row="1" 
-                              HorizontalAlignment="Stretch" Content="Include learning history (schedule)"/>
-                    <CheckBox x:Name="exportMediaCheckBox" Grid.Row="2" 
-                              HorizontalAlignment="Stretch" Content="Include media files"/>
-                    <Button x:Name="exportOkButton" Margin="0,0,0,0" 
-                            Width="140" Grid.Row="3" HorizontalAlignment="Left" 
-                            Content="Export" Style="{StaticResource ButtonBlue}" 
-                            Click="ExportOkButtonClickHandler" BorderThickness="0"/>
-                    <Button x:Name="exportCancelButton" Margin="0,0,0,0" 
-                            Width="140" Grid.Row="3" Background="Transparent" 
-                            HorizontalAlignment="Right" Content="Cancel" 
-                            Style="{StaticResource ButtonGray}" 
-                            Click="FlyoutCancelButtonClickHandler" 
-                            BorderBrush="Black" BorderThickness="1"/>
+                    <CheckBox x:Name="exportScheduleCheckBox" Grid.Row="1" HorizontalAlignment="Stretch" Content="Include learning history (schedule)"/>
+                    <CheckBox x:Name="exportMediaCheckBox" Grid.Row="2" HorizontalAlignment="Stretch" Content="Include media files"/>
+                    <Button x:Name="exportOkButton" Margin="0,0,0,0" Width="140" Grid.Row="3" HorizontalAlignment="Left" Content="Export" Style="{StaticResource ButtonBlue}" Click="ExportOkButtonClickHandler" BorderThickness="0"/>
+                    <Button x:Name="exportCancelButton" Margin="0,0,0,0" Width="140" Grid.Row="3" HorizontalAlignment="Right" Content="Cancel" Style="{StaticResource ButtonGray}" Click="FlyoutCancelButtonClickHandler" BorderBrush="Black" BorderThickness="1"/>
                 </Grid>
             </ContentPresenter>
         </Flyout>
 
-        <Flyout x:Name="configureFlyout" Placement="Bottom" 
-                FlyoutPresenterStyle="{StaticResource DefaultFlyoutPresenterStyle}">
+        <Flyout x:Name="configureFlyout" Placement="Bottom" >
             <ContentPresenter >
                 <Grid Width="300">
                     <Grid.RowDefinitions>
@@ -117,7 +94,6 @@
                             HorizontalContentAlignment="Center" Click="ConfigureFlyoutOkButtonClickHandler" />
 
                     <Button  Style="{StaticResource ButtonGray}" BorderThickness="1" BorderBrush="Black" 
-                             Background="Transparent"
                              Width="135"
                             HorizontalAlignment="Right" Height="35" Content="Cancel"                              
                             HorizontalContentAlignment="Center" Click="FlyoutCancelButtonClickHandler"/>
@@ -153,13 +129,12 @@
                                     <controls:HelpButton Grid.Column="2" HorizontalAlignment="Center"    
                                              PlaceAt="{x:Bind PointToShowFlyout, Mode=OneWay}"             
                                              ParentFlyout="{x:Bind ParentFlyout, Mode=OneWay}"
-                                             
                                              Width="20" Height="20" 
                                              HelpText="{x:Bind HelpText}" Visibility="{x:Bind HelpTextVisibility}" />
 
-                                    <Button  Style="{StaticResource ButtonBlue}" 
-                                             Foreground="{StaticResource ButtonBackGroundAnalogousLeft}"
-                                             Grid.Column="4" Background="Transparent"
+                                    <Button  Style="{StaticResource ButtonContentOcpacity}" Foreground="{StaticResource ButtonBackGroundNormal}"
+                                             Background="Transparent" 
+                                             Grid.Column="4" BorderThickness="0"
                                              Width="35" Height="35" Padding="0"
                                              HorizontalContentAlignment="Center" Click="ConfigureFlyoutNewClickHandler">
                                         <SymbolIcon Symbol="Add" RenderTransformOrigin="0.5,0.5">
@@ -170,8 +145,8 @@
                                     </Button>
 
                                     <Button VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="6" Width="35" Height="35" Padding="0"  Visibility="{x:Bind EditVisibility}" 
-                                        Style="{StaticResource DefaultButtonRevealStyle}" Background="Transparent" Foreground="{StaticResource ButtonBackGroundAnalogousLeft}" 
-                                              Click="ConfigureFlyoutEditButtonClick">
+                                        Style="{StaticResource ButtonContentOcpacity}" Foreground="{StaticResource ButtonBackGroundNormal}" 
+                                            Background="Transparent" BorderThickness="0"  Click="ConfigureFlyoutEditButtonClick">
                                         <SymbolIcon Symbol="Edit" RenderTransformOrigin="0.5,0.5">
                                             <SymbolIcon.RenderTransform>
                                                 <CompositeTransform ScaleX="0.9" ScaleY="0.9" TranslateX="0" TranslateY="0"/>
@@ -179,12 +154,10 @@
                                         </SymbolIcon>
                                     </Button>
 
-                                    <Button VerticalAlignment="Center" HorizontalAlignment="Left" 
-                                            Grid.Column="8" Width="35" Height="35" Padding="0"  Visibility="{x:Bind EditVisibility}"
+                                    <Button VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="8" Width="35" Height="35" Padding="0"  Visibility="{x:Bind EditVisibility}"
                                             Click="ConfigureFlyoutDeleteButtonClick" Background="Transparent"
-                                             Style="{StaticResource ButtonBlue}" 
-                                            Foreground="{StaticResource ButtonBackGroundAnalogousLeft}" 
-                                            >
+                                             Style="{StaticResource ButtonContentOcpacity}" Foreground="{StaticResource ButtonBackGroundNormal}" 
+                                            BorderThickness="0" >
                                         <SymbolIcon Symbol="Delete" RenderTransformOrigin="0.5,0.5" >
                                             <SymbolIcon.RenderTransform>
                                                 <CompositeTransform ScaleX="0.9" ScaleY="0.9" TranslateX="0" TranslateY="0"/>
@@ -201,7 +174,7 @@
 
     </Page.Resources>
 
-    <Grid x:Name="mainGrid" Background="White" Tapped="OnMainGridTapped">
+    <Grid x:Name="mainGrid"  >
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
@@ -212,6 +185,9 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+
+        <!--<Image  x:Name="backgroundImage" Source="/Assets/SkyDay.jpg"
+               Grid.ColumnSpan="3" Grid.RowSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Stretch="Fill" Margin="-50"/>-->
 
         <views:DeckListView x:Name="deckListView" 
                             x:DeferLoadStrategy="Lazy"

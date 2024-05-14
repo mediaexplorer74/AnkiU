@@ -74,7 +74,7 @@ namespace AnkiU.UserControls
         private CoreDispatcher dispatcher;
         private Grid rootGrid;
 
-        public delegate void CustomStudyCreateHandler(CustomStudyOption studyOption, long originalDeckID, long dynamicDeckID);
+        public delegate void CustomStudyCreateHandler(CustomStudyOption studyOption, long deckID);
         public event CustomStudyCreateHandler CustomStudyCreateEvent;
 
         public bool IsOpen { get { return customStudyFlyout.IsOpen; } }
@@ -196,14 +196,14 @@ namespace AnkiU.UserControls
 
         public void ChangeToDayMode()
         {
-            //userControl.Background = UIHelper.CommandBarAcrylicLightBrush;
-            userControl.Foreground = UIHelper.DarkerBrush;
+            userControl.Background = new SolidColorBrush(Windows.UI.Colors.White);
+            userControl.Foreground = new SolidColorBrush(Windows.UI.Colors.Black);
         }
 
         public void ChangeToNightMode()
         {
-            //userControl.Background = UIHelper.CommandBarAcrylicDarkBrush;
-            userControl.Foreground = UIHelper.ForeGroundLight;
+            userControl.Background = new SolidColorBrush(Windows.UI.Colors.Black);
+            userControl.Foreground = new SolidColorBrush(Windows.UI.Colors.White);
         }
 
         public void Show()
@@ -359,7 +359,7 @@ namespace AnkiU.UserControls
             if (HandleNotCreatingDynamicDeckCases(deck))
                 return;
 
-            //Not like in java and python ver, we do nothing if no cards are available
+            //Not in java and python ver, we do nothing if no cards are available
             if (studyOption != CustomStudyOption.CramMode)
             {
                 var max = int.Parse(chosenLabelValue.Text);
@@ -369,12 +369,12 @@ namespace AnkiU.UserControls
 
             customStudyFlyout.IsOpen = false;
             JsonObject dynamicDeck;
-            long dynamicDeckId;
+            long deckId;
             var currentCustomDeck = collection.Deck.GetDeckByName(DEFAULT_DYN_DECKNAME);
             if (currentCustomDeck != null)
             {
-                dynamicDeckId = (long)JsonHelper.GetNameNumber(currentCustomDeck,"id");
-                bool isDyn = collection.Deck.IsDyn(dynamicDeckId);
+                deckId = (long)JsonHelper.GetNameNumber(currentCustomDeck,"id");
+                bool isDyn = collection.Deck.IsDyn(deckId);
                 if (!isDyn)
                 {
                     await UIHelper.ShowMessageDialog("Please rename the deck named \"" + DEFAULT_DYN_DECKNAME + "\" to another name first.");
@@ -382,15 +382,15 @@ namespace AnkiU.UserControls
                 }
                 else
                 {
-                    collection.Sched.EmptyDyn(dynamicDeckId);
+                    collection.Sched.EmptyDyn(deckId);
                     dynamicDeck = currentCustomDeck;
-                    collection.Deck.Select(dynamicDeckId);
+                    collection.Deck.Select(deckId);
                 }
             }
             else
             {
-                dynamicDeckId = collection.Deck.NewDynamicDeck(DEFAULT_DYN_DECKNAME);
-                dynamicDeck = collection.Deck.Get(dynamicDeckId);
+                deckId = collection.Deck.NewDynamicDeck(DEFAULT_DYN_DECKNAME);
+                dynamicDeck = collection.Deck.Get(deckId);
             }
             ProgressDialog dialog = new ProgressDialog();
             dialog.ProgressBarLabel = "Buidling custom study deck...";
@@ -409,7 +409,7 @@ namespace AnkiU.UserControls
                     if (cards == null || cards.Count == 0)
                         await UIHelper.ShowMessageDialog(UIConst.WARN_CUSTOM_STUDY_NOCARDS_MATCH);
 
-                    CustomStudyCreateEvent?.Invoke(studyOption, currentDeckId, dynamicDeckId);
+                    CustomStudyCreateEvent?.Invoke(studyOption, deckId);
                     dialog.Hide();
                 });
             });
@@ -509,7 +509,7 @@ namespace AnkiU.UserControls
             deck["extendRev"] = JsonValue.CreateNumberValue(numberBox.Number);
             collection.Deck.Save(deck);
             collection.Sched.ExtendLimits(0, numberBox.Number);
-            CustomStudyCreateEvent?.Invoke(studyOption, currentDeckId, 0);
+            CustomStudyCreateEvent?.Invoke(studyOption, currentDeckId);
         }
 
         private void extendNewLimit(JsonObject deck)
@@ -517,7 +517,7 @@ namespace AnkiU.UserControls
             deck["extendNew"] = JsonValue.CreateNumberValue(numberBox.Number);
             collection.Deck.Save(deck);
             collection.Sched.ExtendLimits(numberBox.Number, 0);
-            CustomStudyCreateEvent?.Invoke(studyOption, currentDeckId, 0);
+            CustomStudyCreateEvent?.Invoke(studyOption, currentDeckId);
         }
 
         private JsonArray CreateTermArray(string value, int max, int order)

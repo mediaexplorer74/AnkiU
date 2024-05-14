@@ -28,13 +28,10 @@ document.addEventListener("keydown", keyDownTextField, false);
 function keyDownTextField(e) {
 
     if (!isKeydownHandle) {
-        var evtobj = window.event ? event : e;
+        var evtobj = window.event ? event : e
 
-        if (evtobj.ctrlKey) {
-            if (evtobj.keyCode == 83)
-                NotifyButtonClick('saveS');
-            else if (evtobj.keyCode == 13)
-                NotifyButtonClick('saveE');
+        if (evtobj.ctrlKey && evtobj.keyCode == 83) {
+            NotifyButtonClick('save');
             return false;
         }
     }
@@ -127,7 +124,7 @@ function PopulateAllEditableField() {
         fieldName = editableFieldName.replace('name', arguments[i]);
         fieldInput = editableFieldInputTinyMce.replace('fieldName', EDITABLE_FIELD_PREFIX + arguments[i]);
         fieldInput = fieldInput.replace('fieldcontent', arguments[i + 1]);
-        insertHtml += '<div class="outline">' + fieldName + fieldInput + '</div> ';
+        insertHtml += '<div>' + fieldName + fieldInput + '</div> ';
 
         i = i + 2;
     }
@@ -141,7 +138,7 @@ function InsertNewEditableField(name, content) {
     var fieldInput = editableFieldInputTinyMce.replace('fieldName', EDITABLE_FIELD_PREFIX + name);
     fieldInput = fieldInput.replace('fieldcontent', content);
 
-    document.body.insertAdjacentHTML('beforeend', '<div class="outline">' + fieldName + fieldInput + '</div> ');
+    document.body.insertAdjacentHTML('beforeend', '<div>' + fieldName + fieldInput + '</div> ');
 }
 
 function ClearBody() {

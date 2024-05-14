@@ -18,7 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using AnkiU.AnkiCore;
 using AnkiU.UIUtilities;
 using Microsoft.OneDrive.Sdk;
-using Microsoft.OneDrive.Sdk.Authentication;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,23 +31,18 @@ namespace AnkiU.Anki.Syncer
     public class OneDriveSync : ISyncInstance
     {
         private IOneDriveClient oneDriveClient = null;
-        private bool isInitRemoteSyncFolder = false;
-        OnlineIdAuthenticationProvider msaAuthenticationProvider;
-
+        private bool isInitRemoteSyncFolder = false;        
+  
         public void InitInstance()
         {
-            msaAuthenticationProvider = new OnlineIdAuthenticationProvider(
-            new string[] 
-            { 
-                "onedrive.appfolder", 
-                "offline_access" }
-            );
-            oneDriveClient = new OneDriveClient(msaAuthenticationProvider);        
+            
+            oneDriveClient = OneDriveClientExtensions
+                            .GetClientUsingOnlineIdAuthenticator(new string[] { "onedrive.appfolder", "offline_access" });
         }
 
         public async Task AuthenciateAccount()
         {
-            await msaAuthenticationProvider.AuthenticateUserAsync();
+            await oneDriveClient.AuthenticateAsync();
         }
 
         public async Task InitSyncFolderIfNeeded()
@@ -73,9 +67,7 @@ namespace AnkiU.Anki.Syncer
 
         public async Task<List<RemoteItem>> GetChildrenInRemoteFolder(string folderPath)
         {
-            var items = await oneDriveClient.Drive.Special.AppRoot.ItemWithPath(folderPath)
-                .Children.Request().GetAsync();
-
+            var items = await oneDriveClient.Drive.Special.AppRoot.ItemWithPath(folderPath).Children.Request().GetAsync();
             var remoteItems = new List<RemoteItem>(items.Count);
             foreach (var item in items)
             {
@@ -87,8 +79,7 @@ namespace AnkiU.Anki.Syncer
 
         public async Task<RemoteItem> TryGetItemInRemotePathAsync(string itemName, string folderPathToSearch)
         {
-            var items = await oneDriveClient.Drive.Special.AppRoot
-                .ItemWithPath(folderPathToSearch).Children.Request().GetAsync();
+            var items = await oneDriveClient.Drive.Special.AppRoot.ItemWithPath(folderPathToSearch).Children.Request().GetAsync();
             foreach (var item in items)
             {
                 if (item.Name == itemName)
@@ -112,14 +103,12 @@ namespace AnkiU.Anki.Syncer
             return new RemoteItem(item.Name, lastModified);
         }
 
-        public async Task DownloadItemWithPathAsync(string remoteFilePath, StorageFile writeToFile, 
-            bool isSkipNotFoundItem = false)
+        public async Task DownloadItemWithPathAsync(string remoteFilePath, StorageFile writeToFile)
         {
-            await DownloadWithPathAsync(remoteFilePath, writeToFile, isSkipNotFoundItem, false);
+            await DownloadWithPathAsync(remoteFilePath, writeToFile, false);
         }
 
-        private async Task DownloadWithPathAsync(string remoteFilePath, StorageFile writeToFile, 
-            bool isSkipNotFoundItem, bool isRetry)
+        private async Task DownloadWithPathAsync(string remoteFilePath, StorageFile writeToFile, bool isRetry)
         {
             try
             {
@@ -129,19 +118,16 @@ namespace AnkiU.Anki.Syncer
                     await contentStream.CopyToAsync(stream);
                 }
             }
-            catch(Microsoft.Graph.ServiceException ex)
+            catch(OneDriveException ex)
             {
                 if(isRetry)
                 {
-                    if (ex.IsMatch(OneDriveErrorCode.ItemNotFound.ToString()) && isSkipNotFoundItem)                    
-                        return;
-                    else
-                        throw ex;
+                    throw ex;
                 }
                 else
                 {
                     await RefreshAccessToken();
-                    await DownloadWithPathAsync(remoteFilePath, writeToFile, isSkipNotFoundItem, true);
+                    await DownloadWithPathAsync(remoteFilePath, writeToFile, true);
                 }
             }
         }
@@ -161,7 +147,7 @@ namespace AnkiU.Anki.Syncer
                                             .Request().PutAsync<Item>(contentStream);                                   
                 }
             }
-            catch(Microsoft.Graph.ServiceException ex)
+            catch(OneDriveException ex)
             {                
                 if(isRetry)
                 {
@@ -186,7 +172,7 @@ namespace AnkiU.Anki.Syncer
             {
                 await oneDriveClient.Drive.Special.AppRoot.ItemWithPath(remoteFilePath).Request().DeleteAsync();
             }
-            catch
+            catch(OneDriveException)
             {
                 await RefreshAccessToken();
                 await oneDriveClient.Drive.Special.AppRoot.ItemWithPath(remoteFilePath).Request().DeleteAsync();
@@ -200,23 +186,23 @@ namespace AnkiU.Anki.Syncer
 
         public async Task ExceptionHandler(Exception ex)
         {
-            var oneDriveException = ex as Microsoft.Graph.ServiceException;
+            var oneDriveException = ex as OneDriveException;
             if(oneDriveException == null)
             {
-                await UIHelper.ShowMessageDialog(ex.Message + "\n" + ex.StackTrace);
+                await UIHelper.ShowMessageDialog(ex.Message);
                 return;
             }
 
             if (oneDriveException.IsMatch(OneDriveErrorCode.AccessDenied.ToString()))
                 await UIHelper.ShowMessageDialog("Access to your OneDrive folder is denied.");
-            else if (oneDriveException.IsMatch("authenticationFailure"))
-                await UIHelper.ShowMessageDialog("Authentication Failed.");            
+            else if (oneDriveException.IsMatch(OneDriveErrorCode.AuthenticationFailure.ToString()))
+                await UIHelper.ShowMessageDialog("Authentication Failed.");
             else if (oneDriveException.IsMatch(OneDriveErrorCode.ItemNotFound.ToString()))
                 await UIHelper.ShowMessageDialog("File not found.");
             else if (oneDriveException.IsMatch(OneDriveErrorCode.QuotaLimitReached.ToString()))
                 await UIHelper.ShowMessageDialog("Quota limit reached");
             else
-                await UIHelper.ShowMessageDialog(oneDriveException.Error.Message);
+                await UIHelper.ShowMessageDialog("Connection error.");
         }
 
         private static long GetLastDateModified(Item item)

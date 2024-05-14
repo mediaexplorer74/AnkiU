@@ -21,7 +21,7 @@ namespace AnkiU.Anki.Syncer
 
     public class AnkiWebSync : ISync
     {
-        private const string SYNC_Progress = "Received: {0} KB \n Sent: {1} KB";
+        private const string SYNC_Progress = "Received: {0} KB. Sent: {1} KB";
         private MainPage mainPage;
 
         private AnkiCore.Sync.Syncer client;
@@ -48,7 +48,7 @@ namespace AnkiU.Anki.Syncer
             try
             {
                 SetSyncLabel("Sync collection to AnkiWeb...");
-                syncStateDialog.Show();
+                syncStateDialog.Show(MainPage.UserPrefs.IsReadNightMode);
                 GetHostKeyFromVault();
 
                 server = new RemoteServer(hostKey);
@@ -83,13 +83,12 @@ namespace AnkiU.Anki.Syncer
                 {
                     await ConfirmAndStartFullSync();
                     MainPage.UserPrefs.IsFullSyncRequire = false;
-                    await ShowAnkiWebReturnMessageIfHas(results);
                     return;
                 }
                 else if (results[0] == "noChanges" || results[0] == "success")
                 {
-                    SetSyncLabel("Finished.");
-                    syncStateDialog.Show();
+                    SetSyncLabel("Finished.");                    
+                    syncStateDialog.Show(MainPage.UserPrefs.IsReadNightMode);
                     if (results[0] == "success")
                     {
                         await NavigateToDeckSelectPage();
@@ -99,7 +98,6 @@ namespace AnkiU.Anki.Syncer
 
                     MainPage.UserPrefs.IsFullSyncRequire = false;
                     await WaitForCloseSyncStateDialog();
-                    await ShowAnkiWebReturnMessageIfHas(results);
                     return;
                 }
                 else if (results[0] == "serverAbort")
@@ -115,34 +113,24 @@ namespace AnkiU.Anki.Syncer
             }
             catch (HttpSyncerException ex)
             {
-                await WaitForCloseSyncStateDialog();
-                await UIHelper.ShowMessageDialog("AnkiWeb Sync: " + ex.Message);
+                await UIHelper.ShowMessageDialog(ex.Message);
             }            
             catch(PasswordVaulException ex)
             {
-                await WaitForCloseSyncStateDialog();
-                await UIHelper.ShowMessageDialog("AnkiWeb Sync: " + ex.Message);
+                await UIHelper.ShowMessageDialog(ex.Message);
             }
             catch(FileLoadException ex)
             {
-                await WaitForCloseSyncStateDialog();
-                await UIHelper.ShowMessageDialog("AnkiWeb Sync: " + ex.Message);
+                await UIHelper.ShowMessageDialog(ex.Message);
             }
             catch(Exception ex)
             {
-                await WaitForCloseSyncStateDialog();
-                await UIHelper.ShowMessageDialog("AnkiWeb Sync: " + ex.Message + "\n" + ex.StackTrace);
+                await UIHelper.ShowMessageDialog(ex.Message + "\n" + ex.StackTrace);
             }
             finally
             {
                 syncStateDialog.Close();
             }
-        }
-
-        private static async Task ShowAnkiWebReturnMessageIfHas(string[] results)
-        {
-            if (!String.IsNullOrWhiteSpace(results[1]))
-                await UIHelper.ShowMessageDialog(results[1], "AnkiWeb Notification");
         }
 
         private void SetSyncLabel(string message)
@@ -184,16 +172,16 @@ namespace AnkiU.Anki.Syncer
 
         private async Task DownloadFullDatabase(FullSyncer fullSyncclient)
         {
-            SetSyncLabel("Downloading full database...");
-            syncStateDialog.Show();
+            SetSyncLabel("Downloading full database...");            
+            syncStateDialog.Show(MainPage.UserPrefs.IsReadNightMode);
             await fullSyncclient.Download();
             await ReOpenAndNavigateToDeckSelectPage();
         }
 
         private async Task UploadFullDatabase(FullSyncer fullSyncclient)
         {
-            SetSyncLabel("Uploading full database...");
-            syncStateDialog.Show();
+            SetSyncLabel("Uploading full database...");            
+            syncStateDialog.Show(MainPage.UserPrefs.IsReadNightMode);
             await fullSyncclient.Upload();
         }
 
@@ -238,7 +226,7 @@ namespace AnkiU.Anki.Syncer
                 throw new PasswordVaulException("No hostkeys!");
             }
         }
-        
+
         private async void OnServerHttpProgressEvent(Windows.Web.Http.HttpProgress progress)
         {
             await mainPage.CurrentDispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
@@ -250,7 +238,7 @@ namespace AnkiU.Anki.Syncer
                 ulong totalToSend = 0;
                 if (progress.TotalBytesToSend != null)
                     totalToSend = (ulong)progress.TotalBytesToSend / 1024;
-                
+
                 syncStateDialog.Label = label + "\n"
                                         + String.Format(SYNC_Progress, progress.BytesReceived/1024 + "/" + totalToReceive,
                                                                        progress.BytesSent/1024 + "/" + totalToSend);

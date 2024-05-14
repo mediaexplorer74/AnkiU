@@ -1,11 +1,9 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    >
-    <!--xmlns:local="using:AnkiU.Assets.Resource"-->
-    
-    
-     <ResourceDictionary.MergedDictionaries>
+    xmlns:local="using:AnkiU.Assets.Resource">
+
+    <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="ButtonStyles.xaml"/>
         <ResourceDictionary Source="ComboBoxStyles.xaml"/>
         <ResourceDictionary Source="Colors.xaml"/>
@@ -22,7 +20,6 @@
         <ResourceDictionary Source="RadioButtonStyles.xaml"/>
         <ResourceDictionary Source="HubStyles.xaml"/>
         <ResourceDictionary Source="SplitViewStyles.xaml"/>
-        <!--ResourceDictionary Source="NavigationViewStyle.xaml"/-->
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

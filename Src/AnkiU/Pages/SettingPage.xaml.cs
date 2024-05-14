@@ -86,9 +86,7 @@ namespace AnkiU.Pages
             numberOfBackup.Number = MainPage.UserPrefs.NumberOfBackups;
             backupTime.Number = MainPage.UserPrefs.BackupsMinTime;
             syncOnOpenCheckBox.IsChecked = MainPage.UserPrefs.IsSyncOnOpen;
-            syncOnCloseCheckBox.IsChecked = MainPage.UserPrefs.IsSyncOnClose;
             syncMediaCheckBox.IsChecked = MainPage.UserPrefs.IsSyncMedia;
-            syncMediaAnkiWebNotifyCheckBox.IsChecked = MainPage.UserPrefs.IsNotShowMediaNoticeAnkiWebSync;
             if (!UIHelper.IsDeskTop())
                 openBackUpFolderButton.Visibility = Visibility.Collapsed;
 
@@ -98,8 +96,7 @@ namespace AnkiU.Pages
                 DisableMediaSync();
                 ChangeAnkiWebButtonVisibility(Visibility.Visible);                
             }
-            syncServiceCombobox.SelectionChanged += OnSyncServiceSelectionChanged; //Hook here to avoid start up problems     
-            saveShortcutCheckBox.IsChecked = MainPage.UserPrefs.IsChangedSaveShortcutOpen;            
+            syncServiceCombobox.SelectionChanged += OnSyncServiceSelectionChanged; //Hook here to avoid start up problems            
             HookAllEvents();
         }
 
@@ -137,10 +134,7 @@ namespace AnkiU.Pages
             MainPage.UserPrefs.BackupsMinTime = backupTime.Number;
             MainPage.UserPrefs.IsSyncMedia = (bool)syncMediaCheckBox.IsChecked;
             MainPage.UserPrefs.IsSyncOnOpen = (bool)syncOnOpenCheckBox.IsChecked;
-            MainPage.UserPrefs.IsSyncOnClose = (bool)syncOnCloseCheckBox.IsChecked;
             MainPage.UserPrefs.SyncService = syncServiceCombobox.SelectedIndex;
-            MainPage.UserPrefs.IsChangedSaveShortcutOpen = (bool)saveShortcutCheckBox.IsChecked;
-            MainPage.UserPrefs.IsNotShowMediaNoticeAnkiWebSync = (bool)syncMediaAnkiWebNotifyCheckBox.IsChecked;
             mainPage.UpdateUserPreference();
         }
 
@@ -275,5 +269,6 @@ namespace AnkiU.Pages
             if(isContinue)
                 mainPage.Collection.ModSchemaNoCheck();
         }
+        
     }
 }

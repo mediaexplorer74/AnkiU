@@ -160,12 +160,7 @@ namespace AnkiU.Pages
             await mainPage.CurrentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
             {                
                 var control = Window.Current.CoreWindow.GetKeyState(VirtualKey.Control);
-                VirtualKey saveKey;
-                if (MainPage.UserPrefs.IsChangedSaveShortcutOpen)
-                    saveKey = VirtualKey.Enter;
-                else
-                    saveKey = VirtualKey.S;
-                if (control.HasFlag(CoreVirtualKeyStates.Down) && args.VirtualKey == saveKey)
+                if(control.HasFlag(CoreVirtualKeyStates.Down) && args.VirtualKey == VirtualKey.S)
                 {
                     isProcessedKeyPressEvent = true;
                     await SaveNote();
@@ -297,8 +292,8 @@ namespace AnkiU.Pages
                 ContinueNavigating();
                 return;
             }
-            
-            if (noteFieldView.HtmlEditor.IsModified && !IsJointFieldEmpty())
+
+            if (noteFieldView.HtmlEditor.IsModified)
             {
                 e.Cancel = true;
                 bool isContinue = false;
@@ -543,13 +538,8 @@ namespace AnkiU.Pages
                         case ("cloze"):
                             await AddCloze();
                             break;
-                        case ("saveS"):
-                            if(!MainPage.UserPrefs.IsChangedSaveShortcutOpen)
-                                await SaveNote();
-                            break;
-                        case ("saveE"):
-                            if (MainPage.UserPrefs.IsChangedSaveShortcutOpen)
-                                await SaveNote();
+                        case ("save"):                            
+                            await SaveNote();
                             break;
                         case ("groupbutton"):
                             HideTouchKeyboad();
@@ -763,12 +753,7 @@ namespace AnkiU.Pages
         private async Task TryPasteContentFromClipboard()
         {
             var dataPackageView = Clipboard.GetContent();
-
-            if (dataPackageView.Contains(StandardDataFormats.Text))
-            {
-                await PastePlainText(dataPackageView);
-            }
-            else if (dataPackageView.Contains(StandardDataFormats.StorageItems))
+            if (dataPackageView.Contains(StandardDataFormats.StorageItems))
             {
                 await PasteStorageFiles(dataPackageView);
             }
@@ -783,6 +768,10 @@ namespace AnkiU.Pages
             else if (dataPackageView.Contains(StandardDataFormats.WebLink))
             {
                 await PasteAndAutoLinkUri(dataPackageView);
+            }
+            else if (dataPackageView.Contains(StandardDataFormats.Text))
+            {
+                await PastePlainText(dataPackageView);
             }
         }
 
@@ -888,27 +877,17 @@ namespace AnkiU.Pages
                 return;
             }
 
-            if (!IsJointFieldEmpty())
+            bool isContinue = await UIHelper.AskUserConfirmation("Changing note type will reset all your inputs. Continue?");
+            if (!isContinue)
             {
-                bool isContinue = await UIHelper.AskUserConfirmation("Changing note type will reset all your inputs. Continue?");
-                if (!isContinue)
-                {
-                    ChangeSelectedModel(currentNote.ModelId);
-                    return;
-                }
+                ChangeSelectedModel(currentNote.ModelId);
+                return;
             }
 
             SetupDeckModel(selected.Id);
             noteFieldView.HtmlEditor.ReloadWebView();
             await UpdateCurrentNote();            
             fieldListView = null;
-        }
-
-        private bool IsJointFieldEmpty()
-        {
-            string jointFields = currentNote.JointFields.Replace("<div>", "");
-            jointFields = jointFields.Replace("</div>", "");
-            return String.IsNullOrWhiteSpace(jointFields);
         }
 
         private void ChangeSelectedModel(long id)
@@ -1006,7 +985,6 @@ namespace AnkiU.Pages
         private void ChangeBackgroundColor()
         {
             UIHelper.ToggleNightLight(isNightMode, userControl);
-
             if (helpPopup != null)
                 helpPopup.ChangeReadMode(isNightMode);
         }

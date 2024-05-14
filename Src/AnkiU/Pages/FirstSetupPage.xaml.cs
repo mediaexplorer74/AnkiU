@@ -64,8 +64,7 @@ namespace AnkiU.Pages
             try
             {
                 base.OnNavigatedTo(e);
-                mainPage = e.Parameter as MainPage;
-                //mainPage.RootSplitView.IsPaneToggleButtonVisible = false;
+                mainPage = e.Parameter as MainPage;                
                 mainPage.InitCollectionFinished += InitCollectionFinishedHandler;
                 this.NavigationCacheMode = NavigationCacheMode.Disabled;
                 QuoteFadeIn.Begin();

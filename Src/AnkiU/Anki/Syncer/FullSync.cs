@@ -179,7 +179,7 @@ namespace AnkiU.Anki.Syncer
         private async Task PreparingFilesAsync()
         {
             syncStateDialog.Label = "Authenticating...";
-            syncStateDialog.Show();
+            syncStateDialog.Show(MainPage.UserPrefs.IsReadNightMode);            
             syncInstance.InitInstance();
             await syncInstance.AuthenciateAccount();
 
@@ -211,7 +211,7 @@ namespace AnkiU.Anki.Syncer
             dialog.RightButton.Content = "Cancel";
             await dialog.ShowAsync();
             await dialog.WaitForDialogClosed();
-            syncStateDialog.Show();
+            syncStateDialog.Show(MainPage.UserPrefs.IsReadNightMode);
             return dialog.ThreeStateChoose;
         }
 
