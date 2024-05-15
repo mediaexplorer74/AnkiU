@@ -40,11 +40,10 @@ namespace AnkiU
         /// </summary>
         public App()
         {
-            //Telemetry
-            //Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
-            //    Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
-            //    Microsoft.ApplicationInsights.WindowsCollectors.Session);
-
+            // Microsoft.ApplicationInsights.WindowsAppInitializer.InitializeAsync(
+            //     Microsoft.ApplicationInsights.WindowsCollectors.Metadata |
+            //     Microsoft.ApplicationInsights.WindowsCollectors.Session);
+           
             this.InitializeComponent();
             this.Suspending += OnSuspending;
         }
@@ -60,7 +59,7 @@ namespace AnkiU
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {
-                this.DebugSettings.EnableFrameRateCounter = false;
+               // this.DebugSettings.EnableFrameRateCounter = false;
             }
 #endif
 

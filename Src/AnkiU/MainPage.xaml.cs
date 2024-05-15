@@ -626,7 +626,8 @@ namespace AnkiU
             {
                 var task = currentDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
                 {
-                    await UIHelper.ShowMessageDialog(ex.Message, "Failed to init MainPage");
+                    //await UIHelper.ShowMessageDialog(ex.Message, "Failed to init MainPage");
+                    Debug.WriteLine("Failed to init MainPage: " + ex.Message);
                 });
             }
         }
@@ -702,7 +703,7 @@ namespace AnkiU
             catch (Exception ex)
             {
                 //await UIHelper.ShowMessageDialog(ex.Message, "Failed to init MainPage navigation");
-                Debug.WriteLine("[ex] Failed to init MainPage navigation. Ex: "+ ex.Message);
+                Debug.WriteLine("[ex] Failed to init MainPage navigation: " + ex.Message);
             }
         }
 

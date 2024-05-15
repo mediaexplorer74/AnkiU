@@ -66,16 +66,10 @@
                             <ColumnDefinition Width="30"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <SymbolIcon  x:Name="languageSelectSymbol" Symbol="Globe" 
-                                     HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <ComboBox Background="Transparent" x:Name="languageSelectComboBox" 
-                                  Grid.Column="1" VerticalAlignment="Center" 
-                                  HorizontalAlignment="Stretch" ItemsSource="{Binding}"
-                                  Loaded="languageSelectComboBoxLoadedHandler" 
-                                  SelectionChanged="InkToTextLanguageSelectionChangedHandler">
+                        <SymbolIcon  x:Name="languageSelectSymbol" Symbol="Globe" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <ComboBox Background="Transparent" x:Name="languageSelectComboBox" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" ItemsSource="{Binding}" Loaded="languageSelectComboBoxLoadedHandler" SelectionChanged="InkToTextLanguageSelectionChangedHandler">
                             <ComboBox.ItemTemplate>
-                                <DataTemplate 
-                                    x:DataType="data:AvailableRecoginitionLanguage">
+                                <DataTemplate x:DataType="data:AvailableRecoginitionLanguage">
                                     <TextBlock Text="{x:Bind Name}" />
                                 </DataTemplate>
                             </ComboBox.ItemTemplate>
@@ -141,7 +135,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         
-        <CommandBar x:Name="commandBar" Foreground="Black" Background="{StaticResource BackgroundNormal}">
+        <CommandBar x:Name="commandBar" Foreground="Black" Background="{StaticResource BackgroundNormal}" IsDynamicOverflowEnabled="False">
                 <CommandBar.CommandBarOverflowPresenterStyle>
                     <Style TargetType="CommandBarOverflowPresenter">
                         <Setter Property="MaxWidth" Value="{ThemeResource CommandBarOverflowMaxWidth}"/>
@@ -172,11 +166,7 @@
 
                 <CommandBar.Content>
                     <Grid VerticalAlignment="Stretch">
-                        <Button Background="Transparent" x:Name="splitViewToggleButton" 
-                                Width="40" Height="48" 
-                                Style="{StaticResource SplitViewTogglePaneButton}" 
-                                Foreground="{Binding Foreground, ElementName=commandBar}" 
-                                Click="SplitPaneToggleClickHandler" />
+                        <Button Background="Transparent" x:Name="splitViewToggleButton" Width="40" Height="48" Style="{StaticResource SplitViewTogglePaneButton}" Foreground="{Binding Foreground, ElementName=commandBar}" Click="SplitPaneToggleClickHandler" />
                     </Grid>
                 </CommandBar.Content>
 
@@ -185,7 +175,7 @@
                               Background="Transparent" Foreground="{Binding Foreground, ElementName=commandBar}"/>
                     <AppBarButton x:Name="saveButton" Visibility="Collapsed" Icon="Save" Label="Save"  ToolTipService.ToolTip="Ctrl + S"
                               Background="Transparent" Foreground="{Binding Foreground, ElementName=commandBar}"/>
-                    <AppBarButton x:Name="editButton" Visibility="Collapsed" Icon="Edit" Label="Edit"
+                    <AppBarButton x:Name="editButton" Visibility="Collapsed" Icon="Edit" Label="Edit" AllowFocusOnInteraction="True"
                               Background="Transparent" Foreground="{Binding Foreground, ElementName=commandBar}" ToolTipService.ToolTip="Edit"/>
 
                     <AppBarSeparator x:Name="inkSeparator" Background="Transparent" Visibility="{Binding Visibility, ElementName=inkOnOffButton}" Foreground="{Binding Foreground, ElementName=commandBar}"/>
@@ -200,7 +190,7 @@
                         </Grid>
                     </AppBarButton>
 
-                    <AppBarButton x:Name="inkRecognizeButton" Visibility="Collapsed" Icon="Character" Label="Ink to Text" Click="InkRecognizeButtonClickHandler" Foreground="{Binding Foreground, ElementName=commandBar}" ToolTipService.ToolTip="Ink To Text"/>
+                    <AppBarButton x:Name="inkRecognizeButton" AllowFocusOnInteraction="True" Visibility="Collapsed" Icon="Character" Label="Ink to Text" Click="InkRecognizeButtonClickHandler" Foreground="{Binding Foreground, ElementName=commandBar}" ToolTipService.ToolTip="Ink To Text"/>
 
                     <AppBarButton x:Name="inkHideToggleButton"  Click="InkHideToggleButtonClickHandler" Visibility="Collapsed"  Label="Hide Ink" Foreground="{Binding Foreground, ElementName=commandBar}" ToolTipService.ToolTip="Ink Toggle">
                         <Grid >
@@ -238,18 +228,8 @@
                         </Grid>
                     </AppBarButton>
 
-                    <AppBarButton x:Name="addButton" Icon="Add" Label="Add Deck" 
-                                  Background="Transparent" 
-                                  Foreground="{Binding Foreground, ElementName=commandBar}" 
-                                  Opacity="{Binding Opacity, ElementName=commandBar}" 
-                                  Style="{StaticResource PrimaryAppButton}" 
-                                  ToolTipService.ToolTip="Add Deck" />
-                    <AppBarButton x:Name="dragAndHoldButton" Label="Drag Deck" 
-                                  Click="OnDragAndHoldButtonClick" Background="Transparent" 
-                                  Foreground="{Binding Foreground, ElementName=commandBar}" 
-                                  Opacity="{Binding Opacity, ElementName=commandBar}" 
-                                  Style="{StaticResource PrimaryAppButton}" 
-                                  ToolTipService.ToolTip="Drag Decks">
+                    <AppBarButton x:Name="addButton" AllowFocusOnInteraction="True" Icon="Add" Label="Add Deck" Background="Transparent" Foreground="{Binding Foreground, ElementName=commandBar}" Opacity="{Binding Opacity, ElementName=commandBar}" Style="{StaticResource PrimaryAppButton}" ToolTipService.ToolTip="Add Deck" />
+                    <AppBarButton x:Name="dragAndHoldButton" Label="Drag Deck" Click="OnDragAndHoldButtonClick" Background="Transparent" Foreground="{Binding Foreground, ElementName=commandBar}" Opacity="{Binding Opacity, ElementName=commandBar}" Style="{StaticResource PrimaryAppButton}" ToolTipService.ToolTip="Drag Decks">
                         <SymbolIcon Symbol="Pictures" RenderTransformOrigin="0.5,0.5" >
                             <SymbolIcon.RenderTransform>
                                 <CompositeTransform ScaleX="0.9" ScaleY="1.4"/>

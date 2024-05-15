@@ -173,10 +173,11 @@ namespace AnkiU.UserControls
             }
 
             bool isValid = await CheckIfNameValid(deckName, collection.Deck.AllNames(),
-                                                 "A deck with the same name already exists. Please enter a different one.");
+                 "A deck with the same name already exists. Please enter a different one.");
             if (!isValid)
                 return false;
             
+            /*
             if (string.IsNullOrWhiteSpace(noteName))
             {
                 isError = true;
@@ -188,6 +189,7 @@ namespace AnkiU.UserControls
                                      "A note type with the same name already exists. Please enter a different one.");
             if (!isValid)
                 return false;
+            */
 
             return true;
         }
